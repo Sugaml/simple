@@ -1,0 +1,954 @@
+basePath: /
+definitions:
+  doc.Deduction:
+    properties:
+      country:
+        type: string
+      is_percent:
+        type: boolean
+      name:
+        type: string
+      value:
+        type: integer
+    type: object
+  doc.Gateway:
+    properties:
+      accesskey:
+        type: string
+      active:
+        type: boolean
+      name:
+        type: string
+      others:
+        type: string
+      secretkey:
+        type: string
+      token:
+        type: string
+      url:
+        type: string
+    type: object
+  doc.Invoice:
+    properties:
+      date:
+        type: string
+      deduction:
+        $ref: '#/definitions/doc.Deduction'
+      deduction_id:
+        type: integer
+      end_date:
+        type: string
+      invoice_items:
+        items:
+          $ref: '#/definitions/doc.InvoiceItems'
+        type: array
+      promo_code_id:
+        type: integer
+      promocode:
+        $ref: '#/definitions/doc.PromoCode'
+      start_date:
+        type: string
+      total_cost:
+        type: integer
+      user:
+        $ref: '#/definitions/doc.User'
+      user_id:
+        type: integer
+    type: object
+  doc.InvoiceItems:
+    properties:
+      days:
+        type: integer
+      invoice:
+        type: integer
+      invoice_id:
+        type: integer
+      particular:
+        type: string
+      rate:
+        type: integer
+      total:
+        type: integer
+      user:
+        $ref: '#/definitions/doc.User'
+      user_id:
+        type: integer
+    type: object
+  doc.PaymentHistory:
+    properties:
+      balance:
+        type: integer
+      credit:
+        type: integer
+      debit:
+        type: integer
+      invoice:
+        $ref: '#/definitions/doc.Invoice'
+      invoice_id:
+        type: integer
+      transaction:
+        $ref: '#/definitions/doc.Transaction'
+      transaction_id:
+        type: integer
+      user:
+        $ref: '#/definitions/doc.User'
+      user_id:
+        type: integer
+    type: object
+  doc.PaymentSetting:
+    properties:
+      city:
+        type: string
+      country:
+        type: string
+      postal_code:
+        type: string
+      promocode:
+        type: string
+      state:
+        type: string
+      street:
+        type: string
+      user:
+        $ref: '#/definitions/doc.User'
+      user_id:
+        type: integer
+    type: object
+  doc.PromoCode:
+    properties:
+      active:
+        type: boolean
+      code:
+        type: integer
+      count:
+        type: integer
+      discount:
+        type: integer
+      expiry_date:
+        type: string
+      is_percent:
+        type: boolean
+      limit:
+        type: integer
+      title:
+        type: string
+    type: object
+  doc.Threshold:
+    properties:
+      active:
+        type: boolean
+      email:
+        type: string
+      threshold_limit:
+        type: integer
+      user:
+        type: integer
+      user_id:
+        type: integer
+    type: object
+  doc.Transaction:
+    properties:
+      amount:
+        type: integer
+      balance:
+        type: integer
+      gateway:
+        $ref: '#/definitions/doc.Gateway'
+      gateway_id:
+        type: integer
+      invoice:
+        $ref: '#/definitions/doc.Invoice'
+      invoice_id:
+        type: integer
+      promo_code_id:
+        type: integer
+      status:
+        type: string
+      title:
+        type: string
+      user:
+        $ref: '#/definitions/doc.User'
+      user_id:
+        type: integer
+    type: object
+  doc.User:
+    properties:
+      active:
+        type: boolean
+      company:
+        type: string
+      designation:
+        type: string
+      email:
+        type: string
+      email_verified:
+        type: boolean
+      first_name:
+        type: string
+      image:
+        type: string
+      is_admin:
+        type: boolean
+      last_name:
+        type: string
+      password:
+        type: string
+    type: object
+host: localhost:8080
+info:
+  contact:
+    email: info@01cloud.com
+    name: Payment Support
+  description: 01cloud-payment
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  termsOfService: http://swagger.io/terms/
+  title: 01cloud-payment
+  version: "1.0"
+paths:
+  /payment/deduction:
+    get:
+      consumes:
+      - application/json
+      description: Get list of deductions
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/doc.Deduction'
+            type: array
+      summary: Get Deduction
+      tags:
+      - Deductions
+    post:
+      consumes:
+      - application/json
+      description: Create a new Deduction with the input payload
+      parameters:
+      - description: Create Deduction
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/doc.Deduction'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/doc.Deduction'
+      summary: Create a new Deduction
+      tags:
+      - Deduction
+  /payment/deduction/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete a Deduction with the input payload
+      parameters:
+      - description: Deduction id
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+          schema:
+            $ref: '#/definitions/doc.Deduction'
+      summary: Delete a Deduction
+      tags:
+      - Deduction
+    get:
+      consumes:
+      - application/json
+      description: Get Deduction by id
+      parameters:
+      - description: Deduction id
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/doc.Deduction'
+      summary: Get Deduction by id
+      tags:
+      - Deduction
+    put:
+      consumes:
+      - application/json
+      description: Update a Deduction with the input payload
+      parameters:
+      - description: Deduction id
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Update Deduction
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/doc.Deduction'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/doc.Deduction'
+      summary: Update a Deduction
+      tags:
+      - Deduction
+  /payment/invoice:
+    get:
+      consumes:
+      - application/json
+      description: Get list of invoice
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/doc.Invoice'
+            type: array
+      summary: Get Invoice
+      tags:
+      - Invoice
+  /payment/invoice/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete a Invoice with the input payload
+      parameters:
+      - description: Invoice id
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+          schema:
+            $ref: '#/definitions/doc.Invoice'
+      summary: Delete a Invoice
+      tags:
+      - Invoice
+    get:
+      consumes:
+      - application/json
+      description: Get Invoice by id
+      parameters:
+      - description: Invoice id
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/doc.Invoice'
+      summary: Get Invoice by id
+      tags:
+      - Invoice
+    post:
+      consumes:
+      - application/json
+      description: Create a new Invoice with the input paylod
+      parameters:
+      - description: Invoice datestart
+        in: formData
+        name: datestart
+        required: true
+        type: string
+      - description: Invoice dateend
+        in: formData
+        name: dateend
+        required: true
+        type: string
+      - description: User id
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/doc.Invoice'
+      summary: Create a new Invoice
+      tags:
+      - Invoice
+    put:
+      consumes:
+      - application/json
+      description: Update a Invoice with the input payload
+      parameters:
+      - description: Invoice id
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Update Invoice
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/doc.Invoice'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/doc.Invoice'
+      summary: Update a Invoice
+      tags:
+      - Invoice
+  /payment/invoiceitems:
+    get:
+      consumes:
+      - application/json
+      description: Get list of InvoiceItems
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/doc.InvoiceItems'
+            type: array
+      summary: Get InvoiceItems
+      tags:
+      - InvoiceItems
+    post:
+      consumes:
+      - application/json
+      description: Create a new InvoiceItems with the input payload
+      parameters:
+      - description: Create InvoiceItems
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/doc.InvoiceItems'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/doc.InvoiceItems'
+      summary: Create a new InvoiceItems
+      tags:
+      - InvoiceItems
+  /payment/invoiceitems/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete a InvoiceItems with the input payload
+      parameters:
+      - description: InvoiceItems id
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+          schema:
+            $ref: '#/definitions/doc.InvoiceItems'
+      summary: Delete a InvoiceItems
+      tags:
+      - InvoiceItems
+    get:
+      consumes:
+      - application/json
+      description: Get InvoiceItems by id
+      parameters:
+      - description: InvoiceItems id
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/doc.InvoiceItems'
+      summary: Get InvoiceItems by id
+      tags:
+      - InvoiceItems
+    put:
+      consumes:
+      - application/json
+      description: Update a InvoiceItems with the input payload
+      parameters:
+      - description: InvoiceItems id
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Update InvoiceItems
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/doc.InvoiceItems'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/doc.InvoiceItems'
+      summary: Update a InvoiceItems
+      tags:
+      - InvoiceItems
+  /payment/paymenthistory:
+    get:
+      consumes:
+      - application/json
+      description: Get list of PaymentHistory
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/doc.PaymentHistory'
+            type: array
+      summary: Get PaymentHistory
+      tags:
+      - PaymentHistory
+    post:
+      consumes:
+      - application/json
+      description: Create a new PaymentHistory with the input paylod
+      parameters:
+      - description: Create PaymentHistory
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/doc.PaymentHistory'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/doc.PaymentHistory'
+      summary: Create a new PaymentHistory
+      tags:
+      - PaymentHistory
+  /payment/paymenthistory/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete a PaymentHistory with the input payload
+      parameters:
+      - description: PaymentHistory id
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+          schema:
+            $ref: '#/definitions/doc.PaymentHistory'
+      summary: Delete a PaymentHistory
+      tags:
+      - PaymentHistory
+    get:
+      consumes:
+      - application/json
+      description: Get PaymentHistory by id
+      parameters:
+      - description: PaymentHistory id
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/doc.PaymentHistory'
+      summary: Get PaymentHistory by id
+      tags:
+      - PaymentHistory
+    put:
+      consumes:
+      - application/json
+      description: Update a PaymentHistory with the input payload
+      parameters:
+      - description: PaymentHistory id
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Update PaymentHistory
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/doc.PaymentHistory'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/doc.PaymentHistory'
+      summary: Update a PaymentHistory
+      tags:
+      - PaymentHistory
+  /payment/paymentsetting:
+    get:
+      consumes:
+      - application/json
+      description: Get list of PaymentSetting
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/doc.PaymentSetting'
+            type: array
+      summary: Get PaymentSetting
+      tags:
+      - PaymentSetting
+    post:
+      consumes:
+      - application/json
+      description: Create a new PaymentSetting with the input paylod
+      parameters:
+      - description: Create PaymentSetting
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/doc.PaymentSetting'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/doc.PaymentSetting'
+      summary: Create a new PaymentSetting
+      tags:
+      - PaymentSetting
+  /payment/paymentsetting/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete a PaymentSetting with the input payload
+      parameters:
+      - description: PaymentSetting id
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+          schema:
+            $ref: '#/definitions/doc.PaymentSetting'
+      summary: Delete a PaymentSetting
+      tags:
+      - PaymentSetting
+    get:
+      consumes:
+      - application/json
+      description: Get PaymentSetting by id
+      parameters:
+      - description: PaymentSetting id
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/doc.PaymentSetting'
+      summary: Get PaymentSetting by id
+      tags:
+      - PaymentSetting
+    put:
+      consumes:
+      - application/json
+      description: Update a PaymentSetting with the input payload
+      parameters:
+      - description: PaymentSetting id
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Update PaymentSetting
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/doc.PaymentSetting'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/doc.PaymentSetting'
+      summary: Update a PaymentSetting
+      tags:
+      - PaymentSetting
+  /payment/promocode:
+    get:
+      consumes:
+      - application/json
+      description: Get list of PromoCode
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/doc.PromoCode'
+            type: array
+      summary: Get PromoCode
+      tags:
+      - PromoCode
+    post:
+      consumes:
+      - application/json
+      description: Create a new PromoCode with the input payload
+      parameters:
+      - description: Create PromoCode
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/doc.PromoCode'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/doc.PromoCode'
+      summary: Create a new PromoCode
+      tags:
+      - PromoCode
+  /payment/promocode/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete a PromoCode with the input payload
+      parameters:
+      - description: PromoCode id
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+          schema:
+            $ref: '#/definitions/doc.PromoCode'
+      summary: Delete a PromoCode
+      tags:
+      - PromoCode
+    get:
+      consumes:
+      - application/json
+      description: Get PromoCode by id
+      parameters:
+      - description: PromoCode id
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/doc.PromoCode'
+      summary: Get PromoCode by id
+      tags:
+      - PromoCode
+    put:
+      consumes:
+      - application/json
+      description: Update a PromoCode with the input payload
+      parameters:
+      - description: PromoCode id
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Update PromoCode
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/doc.PromoCode'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/doc.PromoCode'
+      summary: Update a PromoCode
+      tags:
+      - PromoCode
+  /payment/threshold:
+    get:
+      consumes:
+      - application/json
+      description: Get list of threshold
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/doc.Threshold'
+            type: array
+      summary: Get Threshold
+      tags:
+      - Threshold
+    post:
+      consumes:
+      - application/json
+      description: Create a new Threshold with the input paylod
+      parameters:
+      - description: Create Threshold
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/doc.Threshold'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/doc.Threshold'
+      summary: Create a new Threshold
+      tags:
+      - Threshold
+  /payment/threshold/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete a Threshold with the input payload
+      parameters:
+      - description: Threshold id
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+          schema:
+            $ref: '#/definitions/doc.Threshold'
+      summary: Delete a Threshold
+      tags:
+      - Threshold
+    get:
+      consumes:
+      - application/json
+      description: Get Threshold by id
+      parameters:
+      - description: Threshold id
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/doc.Threshold'
+      summary: Get Threshold by id
+      tags:
+      - Threshold
+    put:
+      consumes:
+      - application/json
+      description: Update a Threshold with the input payload
+      parameters:
+      - description: Threshold id
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Update Threshold
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/doc.Threshold'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/doc.Threshold'
+      summary: Update a Threshold
+      tags:
+      - Threshold
+swagger: "2.0"
