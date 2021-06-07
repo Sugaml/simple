@@ -30,6 +30,52 @@ func (d *DBStruct) CreateInvoice(invoice Invoice) (Invoice, error) {
 	return invoice, nil
 }
 
+func (d *DBStruct) FindAllInvoice() ([]Invoice, error) {
+	datas := []Invoice{}
+	err = d.db.Model(&Invoice{}).Order("id desc").Find(&datas).Error
+	if err != nil {
+		return []Invoice{}, err
+	}
+	return datas, nil
+}
+func (d *DBStruct) FindByIdInvoice(pid uint) (Invoice, error) {
+	data := Invoice{}
+	err = d.db.Model(&Invoice{}).Where("id = ?", pid).Take(&data).Error
+	if err != nil {
+		return Invoice{}, err
+	}
+	return data, nil
+}
+func (d *DBStruct) UpdateInvoice(data Invoice) (Invoice, error) {
+	var invoice = Invoice{}
+	if data.UserID != 0 {
+		invoice.UserID = data.UserID
+	}
+	if data.TotalCost != 0 {
+		invoice.TotalCost = data.TotalCost
+	}
+	if data.PromoCodeID != 0 {
+		invoice.PromoCodeID = data.PromoCodeID
+	}
+	if data.DeductionID != 0 {
+		invoice.DeductionID = data.DeductionID
+	}
+	err = d.db.Model(&Invoice{}).Where("id = ?", data.ID).Updates(invoice).Error
+	if err != nil {
+		return Invoice{}, err
+	}
+	return data, nil
+}
+func (d *DBStruct) DeleteInvoice(id uint) (int64, error) {
+	db := d.db.Model(&Invoice{}).Where("id = ?", id).Take(&Invoice{}).Delete(&Invoice{})
+	if db.Error != nil {
+		if gorm.IsRecordNotFoundError(db.Error) {
+			return 0, errors.New("Invoice not found")
+		}
+		return 0, db.Error
+	}
+	return db.RowsAffected, nil
+}
 func (data *Invoice) Save(db *gorm.DB) (*Invoice, error) {
 	err = db.Model(&Invoice{}).Create(&data).Error
 	if err != nil {

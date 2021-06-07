@@ -13,8 +13,9 @@ import (
 )
 
 type TestServer struct {
-	DB   *gorm.DB
-	Mock sqlmock.Sqlmock
+	DB    *gorm.DB
+	Mock  sqlmock.Sqlmock
+	store Store
 }
 
 var server TestServer
@@ -44,4 +45,5 @@ func Database() {
 	} else {
 		fmt.Printf("We are connected to the %s database\n", TestDbDriver)
 	}
+	server.store = NewDB(server.DB)
 }

@@ -34,19 +34,19 @@ func (m *MockStore) EXPECT() *MockStoreMockRecorder {
 	return m.recorder
 }
 
-// Create mocks base method.
-func (m *MockStore) Create(data models.PaymentSetting) (models.PaymentSetting, error) {
+// CreateDeduction mocks base method.
+func (m *MockStore) CreateDeduction(data models.Deduction) (models.Deduction, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Create", data)
-	ret0, _ := ret[0].(models.PaymentSetting)
+	ret := m.ctrl.Call(m, "CreateDeduction", data)
+	ret0, _ := ret[0].(models.Deduction)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
-// Create indicates an expected call of Create.
-func (mr *MockStoreMockRecorder) Create(data interface{}) *gomock.Call {
+// CreateDeduction indicates an expected call of CreateDeduction.
+func (mr *MockStoreMockRecorder) CreateDeduction(data interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Create", reflect.TypeOf((*MockStore)(nil).Create), data)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateDeduction", reflect.TypeOf((*MockStore)(nil).CreateDeduction), data)
 }
 
 // CreateInvoice mocks base method.
@@ -64,49 +64,274 @@ func (mr *MockStoreMockRecorder) CreateInvoice(invoice interface{}) *gomock.Call
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateInvoice", reflect.TypeOf((*MockStore)(nil).CreateInvoice), invoice)
 }
 
-// Delete mocks base method.
-func (m *MockStore) Delete(pid uint) (int64, error) {
+// CreatePaymentHistory mocks base method.
+func (m *MockStore) CreatePaymentHistory(data models.PaymentHistory) (models.PaymentHistory, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Delete", pid)
-	ret0, _ := ret[0].(int64)
+	ret := m.ctrl.Call(m, "CreatePaymentHistory", data)
+	ret0, _ := ret[0].(models.PaymentHistory)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
-// Delete indicates an expected call of Delete.
-func (mr *MockStoreMockRecorder) Delete(pid interface{}) *gomock.Call {
+// CreatePaymentHistory indicates an expected call of CreatePaymentHistory.
+func (mr *MockStoreMockRecorder) CreatePaymentHistory(data interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Delete", reflect.TypeOf((*MockStore)(nil).Delete), pid)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreatePaymentHistory", reflect.TypeOf((*MockStore)(nil).CreatePaymentHistory), data)
 }
 
-// FindAll mocks base method.
-func (m *MockStore) FindAll() ([]models.PaymentSetting, error) {
+// CreatePaymentSetting mocks base method.
+func (m *MockStore) CreatePaymentSetting(data models.PaymentSetting) (models.PaymentSetting, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "FindAll")
-	ret0, _ := ret[0].([]models.PaymentSetting)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// FindAll indicates an expected call of FindAll.
-func (mr *MockStoreMockRecorder) FindAll() *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FindAll", reflect.TypeOf((*MockStore)(nil).FindAll))
-}
-
-// FindById mocks base method.
-func (m *MockStore) FindById(uid uint) (models.PaymentSetting, error) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "FindById", uid)
+	ret := m.ctrl.Call(m, "CreatePaymentSetting", data)
 	ret0, _ := ret[0].(models.PaymentSetting)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
-// FindById indicates an expected call of FindById.
-func (mr *MockStoreMockRecorder) FindById(uid interface{}) *gomock.Call {
+// CreatePaymentSetting indicates an expected call of CreatePaymentSetting.
+func (mr *MockStoreMockRecorder) CreatePaymentSetting(data interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FindById", reflect.TypeOf((*MockStore)(nil).FindById), uid)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreatePaymentSetting", reflect.TypeOf((*MockStore)(nil).CreatePaymentSetting), data)
+}
+
+// CreatePromocode mocks base method.
+func (m *MockStore) CreatePromocode(data models.PromoCode) (models.PromoCode, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "CreatePromocode", data)
+	ret0, _ := ret[0].(models.PromoCode)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// CreatePromocode indicates an expected call of CreatePromocode.
+func (mr *MockStoreMockRecorder) CreatePromocode(data interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreatePromocode", reflect.TypeOf((*MockStore)(nil).CreatePromocode), data)
+}
+
+// DeleteDeduction mocks base method.
+func (m *MockStore) DeleteDeduction(pid uint) (int64, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "DeleteDeduction", pid)
+	ret0, _ := ret[0].(int64)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// DeleteDeduction indicates an expected call of DeleteDeduction.
+func (mr *MockStoreMockRecorder) DeleteDeduction(pid interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteDeduction", reflect.TypeOf((*MockStore)(nil).DeleteDeduction), pid)
+}
+
+// DeleteInvoice mocks base method.
+func (m *MockStore) DeleteInvoice(pid uint) (int64, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "DeleteInvoice", pid)
+	ret0, _ := ret[0].(int64)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// DeleteInvoice indicates an expected call of DeleteInvoice.
+func (mr *MockStoreMockRecorder) DeleteInvoice(pid interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteInvoice", reflect.TypeOf((*MockStore)(nil).DeleteInvoice), pid)
+}
+
+// DeletePaymentHistory mocks base method.
+func (m *MockStore) DeletePaymentHistory(pid uint) (int64, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "DeletePaymentHistory", pid)
+	ret0, _ := ret[0].(int64)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// DeletePaymentHistory indicates an expected call of DeletePaymentHistory.
+func (mr *MockStoreMockRecorder) DeletePaymentHistory(pid interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeletePaymentHistory", reflect.TypeOf((*MockStore)(nil).DeletePaymentHistory), pid)
+}
+
+// DeletePaymentSetting mocks base method.
+func (m *MockStore) DeletePaymentSetting(pid uint) (int64, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "DeletePaymentSetting", pid)
+	ret0, _ := ret[0].(int64)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// DeletePaymentSetting indicates an expected call of DeletePaymentSetting.
+func (mr *MockStoreMockRecorder) DeletePaymentSetting(pid interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeletePaymentSetting", reflect.TypeOf((*MockStore)(nil).DeletePaymentSetting), pid)
+}
+
+// DeletePromocode mocks base method.
+func (m *MockStore) DeletePromocode(pid uint) (int64, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "DeletePromocode", pid)
+	ret0, _ := ret[0].(int64)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// DeletePromocode indicates an expected call of DeletePromocode.
+func (mr *MockStoreMockRecorder) DeletePromocode(pid interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeletePromocode", reflect.TypeOf((*MockStore)(nil).DeletePromocode), pid)
+}
+
+// FindAllDeduction mocks base method.
+func (m *MockStore) FindAllDeduction() ([]models.Deduction, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "FindAllDeduction")
+	ret0, _ := ret[0].([]models.Deduction)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// FindAllDeduction indicates an expected call of FindAllDeduction.
+func (mr *MockStoreMockRecorder) FindAllDeduction() *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FindAllDeduction", reflect.TypeOf((*MockStore)(nil).FindAllDeduction))
+}
+
+// FindAllInvoice mocks base method.
+func (m *MockStore) FindAllInvoice() ([]models.Invoice, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "FindAllInvoice")
+	ret0, _ := ret[0].([]models.Invoice)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// FindAllInvoice indicates an expected call of FindAllInvoice.
+func (mr *MockStoreMockRecorder) FindAllInvoice() *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FindAllInvoice", reflect.TypeOf((*MockStore)(nil).FindAllInvoice))
+}
+
+// FindAllPaymentHistory mocks base method.
+func (m *MockStore) FindAllPaymentHistory() ([]models.PaymentHistory, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "FindAllPaymentHistory")
+	ret0, _ := ret[0].([]models.PaymentHistory)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// FindAllPaymentHistory indicates an expected call of FindAllPaymentHistory.
+func (mr *MockStoreMockRecorder) FindAllPaymentHistory() *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FindAllPaymentHistory", reflect.TypeOf((*MockStore)(nil).FindAllPaymentHistory))
+}
+
+// FindAllPaymentSetting mocks base method.
+func (m *MockStore) FindAllPaymentSetting() ([]models.PaymentSetting, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "FindAllPaymentSetting")
+	ret0, _ := ret[0].([]models.PaymentSetting)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// FindAllPaymentSetting indicates an expected call of FindAllPaymentSetting.
+func (mr *MockStoreMockRecorder) FindAllPaymentSetting() *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FindAllPaymentSetting", reflect.TypeOf((*MockStore)(nil).FindAllPaymentSetting))
+}
+
+// FindAllPromocode mocks base method.
+func (m *MockStore) FindAllPromocode() ([]models.PromoCode, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "FindAllPromocode")
+	ret0, _ := ret[0].([]models.PromoCode)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// FindAllPromocode indicates an expected call of FindAllPromocode.
+func (mr *MockStoreMockRecorder) FindAllPromocode() *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FindAllPromocode", reflect.TypeOf((*MockStore)(nil).FindAllPromocode))
+}
+
+// FindByIdDeduction mocks base method.
+func (m *MockStore) FindByIdDeduction(uid uint) (models.Deduction, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "FindByIdDeduction", uid)
+	ret0, _ := ret[0].(models.Deduction)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// FindByIdDeduction indicates an expected call of FindByIdDeduction.
+func (mr *MockStoreMockRecorder) FindByIdDeduction(uid interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FindByIdDeduction", reflect.TypeOf((*MockStore)(nil).FindByIdDeduction), uid)
+}
+
+// FindByIdInvoice mocks base method.
+func (m *MockStore) FindByIdInvoice(uid uint) (models.Invoice, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "FindByIdInvoice", uid)
+	ret0, _ := ret[0].(models.Invoice)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// FindByIdInvoice indicates an expected call of FindByIdInvoice.
+func (mr *MockStoreMockRecorder) FindByIdInvoice(uid interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FindByIdInvoice", reflect.TypeOf((*MockStore)(nil).FindByIdInvoice), uid)
+}
+
+// FindByIdPaymentHistory mocks base method.
+func (m *MockStore) FindByIdPaymentHistory(uid uint) (models.PaymentHistory, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "FindByIdPaymentHistory", uid)
+	ret0, _ := ret[0].(models.PaymentHistory)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// FindByIdPaymentHistory indicates an expected call of FindByIdPaymentHistory.
+func (mr *MockStoreMockRecorder) FindByIdPaymentHistory(uid interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FindByIdPaymentHistory", reflect.TypeOf((*MockStore)(nil).FindByIdPaymentHistory), uid)
+}
+
+// FindByIdPaymentSetting mocks base method.
+func (m *MockStore) FindByIdPaymentSetting(uid uint) (models.PaymentSetting, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "FindByIdPaymentSetting", uid)
+	ret0, _ := ret[0].(models.PaymentSetting)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// FindByIdPaymentSetting indicates an expected call of FindByIdPaymentSetting.
+func (mr *MockStoreMockRecorder) FindByIdPaymentSetting(uid interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FindByIdPaymentSetting", reflect.TypeOf((*MockStore)(nil).FindByIdPaymentSetting), uid)
+}
+
+// FindByIdPromocode mocks base method.
+func (m *MockStore) FindByIdPromocode(uid uint) (models.PromoCode, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "FindByIdPromocode", uid)
+	ret0, _ := ret[0].(models.PromoCode)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// FindByIdPromocode indicates an expected call of FindByIdPromocode.
+func (mr *MockStoreMockRecorder) FindByIdPromocode(uid interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FindByIdPromocode", reflect.TypeOf((*MockStore)(nil).FindByIdPromocode), uid)
 }
 
 // MigrateDB mocks base method.
@@ -121,17 +346,77 @@ func (mr *MockStoreMockRecorder) MigrateDB() *gomock.Call {
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "MigrateDB", reflect.TypeOf((*MockStore)(nil).MigrateDB))
 }
 
-// Update mocks base method.
-func (m *MockStore) Update(data models.PaymentSetting) (models.PaymentSetting, error) {
+// UpdateDeduction mocks base method.
+func (m *MockStore) UpdateDeduction(data models.Deduction) (models.Deduction, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Update", data)
+	ret := m.ctrl.Call(m, "UpdateDeduction", data)
+	ret0, _ := ret[0].(models.Deduction)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// UpdateDeduction indicates an expected call of UpdateDeduction.
+func (mr *MockStoreMockRecorder) UpdateDeduction(data interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateDeduction", reflect.TypeOf((*MockStore)(nil).UpdateDeduction), data)
+}
+
+// UpdateInvoice mocks base method.
+func (m *MockStore) UpdateInvoice(data models.Invoice) (models.Invoice, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "UpdateInvoice", data)
+	ret0, _ := ret[0].(models.Invoice)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// UpdateInvoice indicates an expected call of UpdateInvoice.
+func (mr *MockStoreMockRecorder) UpdateInvoice(data interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateInvoice", reflect.TypeOf((*MockStore)(nil).UpdateInvoice), data)
+}
+
+// UpdatePaymentHistory mocks base method.
+func (m *MockStore) UpdatePaymentHistory(data models.PaymentHistory) (models.PaymentHistory, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "UpdatePaymentHistory", data)
+	ret0, _ := ret[0].(models.PaymentHistory)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// UpdatePaymentHistory indicates an expected call of UpdatePaymentHistory.
+func (mr *MockStoreMockRecorder) UpdatePaymentHistory(data interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdatePaymentHistory", reflect.TypeOf((*MockStore)(nil).UpdatePaymentHistory), data)
+}
+
+// UpdatePaymentSetting mocks base method.
+func (m *MockStore) UpdatePaymentSetting(data models.PaymentSetting) (models.PaymentSetting, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "UpdatePaymentSetting", data)
 	ret0, _ := ret[0].(models.PaymentSetting)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
-// Update indicates an expected call of Update.
-func (mr *MockStoreMockRecorder) Update(data interface{}) *gomock.Call {
+// UpdatePaymentSetting indicates an expected call of UpdatePaymentSetting.
+func (mr *MockStoreMockRecorder) UpdatePaymentSetting(data interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Update", reflect.TypeOf((*MockStore)(nil).Update), data)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdatePaymentSetting", reflect.TypeOf((*MockStore)(nil).UpdatePaymentSetting), data)
+}
+
+// UpdatePromocode mocks base method.
+func (m *MockStore) UpdatePromocode(data models.PromoCode) (models.PromoCode, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "UpdatePromocode", data)
+	ret0, _ := ret[0].(models.PromoCode)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// UpdatePromocode indicates an expected call of UpdatePromocode.
+func (mr *MockStoreMockRecorder) UpdatePromocode(data interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdatePromocode", reflect.TypeOf((*MockStore)(nil).UpdatePromocode), data)
 }

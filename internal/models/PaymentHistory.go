@@ -1,6 +1,8 @@
 package models
 
 import (
+	"errors"
+
 	"github.com/jinzhu/gorm"
 )
 
@@ -17,6 +19,49 @@ type PaymentHistory struct {
 	TransactionID uint         `gorm:"not null" json:"transaction_id"`
 }
 
+func (d *DBStruct) CreatePaymentHistory(data PaymentHistory) (PaymentHistory, error) {
+	err = d.db.Model(&PaymentHistory{}).Create(&data).Error
+	if err != nil {
+		return PaymentHistory{}, err
+	}
+	return data, nil
+}
+func (d *DBStruct) FindAllPaymentHistory() ([]PaymentHistory, error) {
+	datas := []PaymentHistory{}
+	err = d.db.Model(&PaymentHistory{}).Order("id desc").Find(&datas).Error
+	if err != nil {
+		return []PaymentHistory{}, err
+	}
+	return datas, nil
+}
+
+func (d *DBStruct) FindByIdPaymentHistory(pid uint) (PaymentHistory, error) {
+	data := PaymentHistory{}
+	err = d.db.Model(&PaymentHistory{}).Where("id = ?", pid).Take(&data).Error
+	if err != nil {
+		return PaymentHistory{}, err
+	}
+	return data, nil
+}
+
+func (d *DBStruct) UpdatePaymentHistory(data PaymentHistory) (PaymentHistory, error) {
+	err = d.db.Model(&PaymentHistory{}).Update(&data).Error
+	if err != nil {
+		return PaymentHistory{}, err
+	}
+	return data, nil
+}
+
+func (d *DBStruct) DeletePaymentHistory(pid uint) (int64, error) {
+	result := d.db.Model(&PaymentHistory{}).Where("id = ?", pid).Take(&PaymentHistory{}).Delete(&PaymentHistory{})
+	if result.Error != nil {
+		if gorm.IsRecordNotFoundError(result.Error) {
+			return 0, errors.New("paymenthistory not found")
+		}
+		return 0, result.Error
+	}
+	return result.RowsAffected, nil
+}
 func (data *PaymentHistory) Save(db *gorm.DB) (*PaymentHistory, error) {
 	err = db.Model(&PaymentHistory{}).Create(&data).Error
 	if err != nil {

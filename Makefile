@@ -48,7 +48,7 @@ test-dev:
 .PHONY: run-dev
 run-dev:
 	go run cmd/server/main.go
-	
+
 # Alias for help target
 all: help
 

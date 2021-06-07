@@ -18,7 +18,7 @@ type PaymentSetting struct {
 	Promocode   string `gorm:"not null" json:"promocode"`
 }
 
-func (d *DBStruct) Create(data PaymentSetting) (PaymentSetting, error) {
+func (d *DBStruct) CreatePaymentSetting(data PaymentSetting) (PaymentSetting, error) {
 	err := d.db.Model(&PaymentSetting{}).Create(&data).Error
 	if err != nil {
 		return PaymentSetting{}, err
@@ -26,7 +26,7 @@ func (d *DBStruct) Create(data PaymentSetting) (PaymentSetting, error) {
 	return data, nil
 }
 
-func (d *DBStruct) FindById(uid uint) (PaymentSetting, error) {
+func (d *DBStruct) FindByIdPaymentSetting(uid uint) (PaymentSetting, error) {
 	data := PaymentSetting{}
 	err = d.db.Model(&PaymentSetting{}).Where("id = ?", uid).Take(&data).Error
 	if err != nil {
@@ -35,7 +35,7 @@ func (d *DBStruct) FindById(uid uint) (PaymentSetting, error) {
 	return data, nil
 }
 
-func (d *DBStruct) FindAll() ([]PaymentSetting, error) {
+func (d *DBStruct) FindAllPaymentSetting() ([]PaymentSetting, error) {
 	data := []PaymentSetting{}
 	err = d.db.Model(&PaymentSetting{}).Order("id desc").Find(&data).Error
 	if err != nil {
@@ -43,14 +43,14 @@ func (d *DBStruct) FindAll() ([]PaymentSetting, error) {
 	}
 	return data, nil
 }
-func (d *DBStruct) Update(paymentsetting PaymentSetting) (PaymentSetting, error) {
+func (d *DBStruct) UpdatePaymentSetting(paymentsetting PaymentSetting) (PaymentSetting, error) {
 	err = d.db.Model(&PaymentSetting{}).Update(&paymentsetting).Error
 	if err != nil {
 		return PaymentSetting{}, err
 	}
 	return paymentsetting, nil
 }
-func (d *DBStruct) Delete(pid uint) (int64, error) {
+func (d *DBStruct) DeletePaymentSetting(pid uint) (int64, error) {
 	result := d.db.Model(&PaymentSetting{}).Where("id = ?", pid).Take(&PaymentSetting{}).Delete(&PaymentSetting{})
 	if result.Error != nil {
 		if gorm.IsRecordNotFoundError(result.Error) {

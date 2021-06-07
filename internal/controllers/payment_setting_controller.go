@@ -23,7 +23,7 @@ import (
 func (server *Server) CreatePaymentSetting(w http.ResponseWriter, r *http.Request) {
 	body, err := ioutil.ReadAll(r.Body)
 	if err != nil {
-		responses.ERROR(w, http.StatusNoContent, err)
+		responses.ERROR(w, http.StatusInternalServerError, err)
 		return
 	}
 	data := models.PaymentSetting{}
@@ -32,7 +32,7 @@ func (server *Server) CreatePaymentSetting(w http.ResponseWriter, r *http.Reques
 		responses.ERROR(w, http.StatusNoContent, err)
 		return
 	}
-	paymentsetting, err := server.DB.Create(data)
+	paymentsetting, err := server.DB.CreatePaymentSetting(data)
 
 	if err != nil {
 		responses.ERROR(w, http.StatusInternalServerError, err)
@@ -50,7 +50,7 @@ func (server *Server) CreatePaymentSetting(w http.ResponseWriter, r *http.Reques
 // @Success 200 {array} doc.PaymentSetting
 // @Router /payment/paymentsetting [get]
 func (server *Server) GetPaymentSetting(w http.ResponseWriter, r *http.Request) {
-	paymentsetting, err := server.DB.FindAll()
+	paymentsetting, err := server.DB.FindAllPaymentSetting()
 	if err != nil {
 		responses.ERROR(w, http.StatusInternalServerError, err)
 		return
@@ -74,7 +74,7 @@ func (server *Server) GetPaymentSettingById(w http.ResponseWriter, r *http.Reque
 		return
 	}
 	data := models.PaymentSetting{}
-	data, err = server.DB.FindById(uint(pid))
+	data, err = server.DB.FindByIdPaymentSetting(uint(pid))
 	if err != nil {
 		responses.ERROR(w, http.StatusInternalServerError, err)
 		return
@@ -99,7 +99,7 @@ func (server *Server) UpdatePaymentSetting(w http.ResponseWriter, r *http.Reques
 		return
 	}
 	data := models.PaymentSetting{}
-	data, err = server.DB.FindById(uint(pid))
+	data, err = server.DB.FindByIdPaymentSetting(uint(pid))
 	if err != nil {
 		responses.ERROR(w, http.StatusNotFound, err)
 		return
@@ -110,7 +110,7 @@ func (server *Server) UpdatePaymentSetting(w http.ResponseWriter, r *http.Reques
 		return
 	}
 	defer r.Body.Close()
-	dataUpdated, err := server.DB.Update(data)
+	dataUpdated, err := server.DB.UpdatePaymentSetting(data)
 	if err != nil {
 		responses.ERROR(w, http.StatusInternalServerError, err)
 		return
@@ -135,7 +135,7 @@ func (server *Server) DeletePaymentSetting(w http.ResponseWriter, r *http.Reques
 		return
 	}
 	//paymentsetting := models.PaymentSetting{}
-	_, err = server.DB.Delete(uint(pid))
+	_, err = server.DB.DeletePaymentSetting(uint(pid))
 	if err != nil {
 		responses.ERROR(w, http.StatusInternalServerError, err)
 		return
