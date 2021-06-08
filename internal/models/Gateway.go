@@ -1,6 +1,8 @@
 package models
 
 import (
+	"errors"
+
 	"github.com/jinzhu/gorm"
 )
 
@@ -17,28 +19,46 @@ type Gateway struct {
 
 var err error
 
-func (data *Gateway) Save(db *gorm.DB) (*Gateway, error) {
-
-	err = db.Model(&Gateway{}).Create(&data).Error
+func (d *DBStruct) CreateGateway(data Gateway) (Gateway, error) {
+	err = d.db.Model(&Gateway{}).Create(&data).Error
 	if err != nil {
-		return &Gateway{}, err
+		return Gateway{}, err
 	}
 	return data, nil
 }
-
-func (data *Gateway) FindAll(db *gorm.DB) (*[]Gateway, error) {
+func (d *DBStruct) FindAllGateway() ([]Gateway, error) {
 	datas := []Gateway{}
-	err = db.Model(&Gateway{}).Preload("Project").Preload("User").Order("id desc").Find(&datas).Error
+	err = d.db.Model(&Gateway{}).Order("id desc").Find(&datas).Error
 	if err != nil {
-		return &[]Gateway{}, err
+		return []Gateway{}, err
 	}
-	return &datas, nil
+	return datas, nil
 }
 
-func (data *Gateway) Find(db *gorm.DB, pid uint64) (*Gateway, error) {
-	err = db.Model(&Gateway{}).Preload("Project").Where("id = ?", pid).Take(&data).Error
+func (d *DBStruct) FindByIdGateway(pid uint) (Gateway, error) {
+	data := Gateway{}
+	err = d.db.Model(&Gateway{}).Where("id = ?", pid).Take(&data).Error
 	if err != nil {
-		return &Gateway{}, err
+		return Gateway{}, err
 	}
 	return data, nil
+}
+
+func (d *DBStruct) UpdateGateway(data Gateway) (Gateway, error) {
+	err = d.db.Model(&Gateway{}).Update(&data).Error
+	if err != nil {
+		return Gateway{}, err
+	}
+	return data, nil
+}
+
+func (d *DBStruct) DeleteGateway(pid uint) (int64, error) {
+	result := d.db.Model(&Gateway{}).Where("id = ?", pid).Take(&Gateway{}).Delete(&Gateway{})
+	if result.Error != nil {
+		if gorm.IsRecordNotFoundError(result.Error) {
+			return 0, errors.New("promocode not found")
+		}
+		return 0, result.Error
+	}
+	return result.RowsAffected, nil
 }

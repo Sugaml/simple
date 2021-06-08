@@ -19,6 +19,7 @@ func TestSavePaymentHistory(t *testing.T) {
 		InvoiceID:     1,
 		TransactionID: 1,
 	}
+	paymenthistory0.ID = 1
 	server.Mock.ExpectQuery(regexp.QuoteMeta(
 		`INSERT`)).WillReturnRows(sqlmock.NewRows([]string{"id"}).AddRow(1))
 	server.Mock.ExpectCommit()
@@ -26,11 +27,12 @@ func TestSavePaymentHistory(t *testing.T) {
 	server.Mock.MatchExpectationsInOrder(false)
 	fmt.Println(server.Mock.ExpectationsWereMet())
 
-	paymenthistory, err := paymenthistory0.Save(server.DB)
+	paymenthistory, err := server.store.CreatePaymentHistory(&paymenthistory0)
 	if err != nil {
 		t.Errorf("this is the error getting the Payment Setting: %v\n", err)
 		return
 	}
+	assert.Equal(t, paymenthistory0.ID, paymenthistory.ID)
 	assert.Equal(t, paymenthistory0.UserID, paymenthistory.UserID)
 	assert.Equal(t, paymenthistory0.Credit, paymenthistory.Credit)
 	assert.Equal(t, paymenthistory0.Debit, paymenthistory.Debit)
@@ -40,17 +42,36 @@ func TestSavePaymentHistory(t *testing.T) {
 }
 
 func TestFindAllPaymentHistory(t *testing.T) {
-	var paymenthistory = PaymentHistory{}
+	paymenthistories := []PaymentHistory{
+		{
+			UserID:        1,
+			Credit:        500,
+			Debit:         500,
+			Balance:       0,
+			TransactionID: 1,
+			InvoiceID:     1,
+		},
+		{
+			UserID:        2,
+			Credit:        300,
+			Debit:         300,
+			Balance:       0,
+			TransactionID: 2,
+			InvoiceID:     2,
+		},
+	}
+	fmt.Println(len(paymenthistories))
+	var testpaymenthisotries *[]PaymentHistory
 	server.Mock.ExpectQuery(regexp.QuoteMeta(
 		`SELECT`)).WillReturnRows(sqlmock.NewRows([]string{"id", "user_id", "debit", "Credit", "balance", "invoice_id", "transaction_id", "created_at", "updated_at"}).AddRow(1, 1, 500, 500, 0, 1, 1, time.Now(), time.Now()))
-	paymenthistory0, err := paymenthistory.FindAll(server.DB)
+	testpaymenthisotries, err = server.store.FindAllPaymentHistory(&paymenthistories)
 	fmt.Println(server.Mock.ExpectationsWereMet())
 
 	if err != nil {
 		t.Errorf("this is the error getting the users: %v\n", err)
 		return
 	}
-	assert.Equal(t, len(*paymenthistory0), 1)
+	assert.Equal(t, len(*testpaymenthisotries), len(paymenthistories))
 }
 
 func TestGetPaymentHistoryByID(t *testing.T) {
@@ -62,14 +83,16 @@ func TestGetPaymentHistoryByID(t *testing.T) {
 		TransactionID: 1,
 		InvoiceID:     1,
 	}
+	paymenthistory.ID = 1
 	server.Mock.ExpectQuery(regexp.QuoteMeta(`SELECT`)).WillReturnRows(sqlmock.NewRows([]string{"id", "user_id", "credit", "debit", "balance", "transaction_id", "invoice_id", "CreatedAt", "UpdatedAt"}).AddRow(1, 1, 500, 500, 0, 1, 1, time.Now(), time.Now()))
 	server.Mock.ExpectCommit()
 	server.Mock.MatchExpectationsInOrder(false)
-	paymenthistory0, err := paymenthistory.Find(server.DB, 1)
+	paymenthistory0, err := server.store.FindByIdPaymentHistory(paymenthistory.ID)
 	if err != nil {
 		t.Errorf("this is the error getting one user: %v\n", err)
 		return
 	}
+	assert.Equal(t, paymenthistory0.ID, paymenthistory.ID)
 	assert.Equal(t, paymenthistory0.UserID, paymenthistory.UserID)
 	assert.Equal(t, paymenthistory0.Credit, paymenthistory.Credit)
 	assert.Equal(t, paymenthistory0.Debit, paymenthistory.Debit)
@@ -97,13 +120,13 @@ func TestUpdatePaymentHistory(t *testing.T) {
 	server.Mock.ExpectCommit()
 	server.Mock.MatchExpectationsInOrder(false)
 	paymenthistory.ID = 1
-	updatedPaymentHistory, err := paymenthistory.Update(server.DB)
+	updatedPaymentHistory, err := server.store.UpdatePaymentHistory(&paymenthistory)
 	if err != nil {
 		t.Errorf("this is the error updating the user: %v\n", err)
 		return
 	}
 	assert.Equal(t, updatedPaymentHistory.UserID, paymenthistory.UserID)
-	//assert.Equal(t, updatedPaymentHistory.Country, paymentsetting.Country)
+
 }
 
 func TestDeletePaymentHistory(t *testing.T) {
@@ -115,6 +138,7 @@ func TestDeletePaymentHistory(t *testing.T) {
 		InvoiceID:     1,
 		TransactionID: 1,
 	}
+	paymenthistory.ID = 1
 	server.Mock.ExpectBegin()
 	server.Mock.ExpectQuery(regexp.QuoteMeta(
 		`SELECT`)).WillReturnRows(sqlmock.NewRows([]string{"id", "user_id", "credit", "debit", "balance", "transaction_id", "invoice_id", "CreatedAt", "UpdatedAt"}).AddRow(1, paymenthistory.UserID, paymenthistory.Credit, paymenthistory.Debit, paymenthistory.Balance, paymenthistory.TransactionID, paymenthistory.InvoiceID, time.Now(), time.Now()))
@@ -122,10 +146,10 @@ func TestDeletePaymentHistory(t *testing.T) {
 		`UPDATE`)).WillReturnResult(sqlmock.NewResult(0, 1))
 	server.Mock.ExpectCommit()
 	server.Mock.MatchExpectationsInOrder(false)
-	paymenthistory0, err := paymenthistory.Delete(server.DB)
+	id, err := server.store.DeletePaymentHistory(paymenthistory.ID)
 	if err != nil {
 		t.Errorf("this is the error updating the user: %v\n", err)
 		return
 	}
-	assert.Equal(t, int64(paymenthistory0.ID), int64(0))
+	assert.Equal(t, id, int64(1))
 }

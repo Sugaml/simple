@@ -19,35 +19,34 @@ type PaymentHistory struct {
 	TransactionID uint         `gorm:"not null" json:"transaction_id"`
 }
 
-func (d *DBStruct) CreatePaymentHistory(data PaymentHistory) (PaymentHistory, error) {
+func (d *DBStruct) CreatePaymentHistory(data *PaymentHistory) (*PaymentHistory, error) {
 	err = d.db.Model(&PaymentHistory{}).Create(&data).Error
 	if err != nil {
-		return PaymentHistory{}, err
+		return &PaymentHistory{}, err
 	}
 	return data, nil
 }
-func (d *DBStruct) FindAllPaymentHistory() ([]PaymentHistory, error) {
-	datas := []PaymentHistory{}
+func (d *DBStruct) FindAllPaymentHistory(datas *[]PaymentHistory) (*[]PaymentHistory, error) {
 	err = d.db.Model(&PaymentHistory{}).Order("id desc").Find(&datas).Error
 	if err != nil {
-		return []PaymentHistory{}, err
+		return &[]PaymentHistory{}, err
 	}
 	return datas, nil
 }
 
-func (d *DBStruct) FindByIdPaymentHistory(pid uint) (PaymentHistory, error) {
+func (d *DBStruct) FindByIdPaymentHistory(pid uint) (*PaymentHistory, error) {
 	data := PaymentHistory{}
 	err = d.db.Model(&PaymentHistory{}).Where("id = ?", pid).Take(&data).Error
 	if err != nil {
-		return PaymentHistory{}, err
+		return &PaymentHistory{}, err
 	}
-	return data, nil
+	return &data, nil
 }
 
-func (d *DBStruct) UpdatePaymentHistory(data PaymentHistory) (PaymentHistory, error) {
+func (d *DBStruct) UpdatePaymentHistory(data *PaymentHistory) (*PaymentHistory, error) {
 	err = d.db.Model(&PaymentHistory{}).Update(&data).Error
 	if err != nil {
-		return PaymentHistory{}, err
+		return &PaymentHistory{}, err
 	}
 	return data, nil
 }
@@ -61,42 +60,4 @@ func (d *DBStruct) DeletePaymentHistory(pid uint) (int64, error) {
 		return 0, result.Error
 	}
 	return result.RowsAffected, nil
-}
-func (data *PaymentHistory) Save(db *gorm.DB) (*PaymentHistory, error) {
-	err = db.Model(&PaymentHistory{}).Create(&data).Error
-	if err != nil {
-		return &PaymentHistory{}, err
-	}
-	return data, nil
-}
-
-func (data *PaymentHistory) FindAll(db *gorm.DB) (*[]PaymentHistory, error) {
-	datas := []PaymentHistory{}
-	err = db.Model(&PaymentHistory{}).Order("id desc").Find(&datas).Error
-	if err != nil {
-		return &[]PaymentHistory{}, err
-	}
-	return &datas, nil
-}
-
-func (data *PaymentHistory) Find(db *gorm.DB, pid uint64) (*PaymentHistory, error) {
-	err = db.Model(&PaymentHistory{}).Where("id = ?", pid).Take(&data).Error
-	if err != nil {
-		return &PaymentHistory{}, err
-	}
-	return data, nil
-}
-func (data *PaymentHistory) Update(db *gorm.DB) (*PaymentHistory, error) {
-	err = db.Model(&PaymentHistory{}).Update(&data).Error
-	if err != nil {
-		return &PaymentHistory{}, err
-	}
-	return data, nil
-}
-func (data *PaymentHistory) Delete(db *gorm.DB) (*PaymentHistory, error) {
-	err = db.Model(&PaymentHistory{}).Delete(&data).Error
-	if err != nil {
-		return &PaymentHistory{}, err
-	}
-	return data, nil
 }

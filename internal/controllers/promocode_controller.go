@@ -25,21 +25,22 @@ import (
 func (server *Server) CreatePromoCode(w http.ResponseWriter, r *http.Request) {
 	body, err := ioutil.ReadAll(r.Body)
 	if err != nil {
-		responses.ERROR(w, http.StatusUnprocessableEntity, err)
+		responses.ERROR(w, http.StatusInternalServerError, err)
 		return
 	}
 	data := models.PromoCode{}
 	err = json.Unmarshal(body, &data)
 	if err != nil {
-		responses.ERROR(w, http.StatusUnprocessableEntity, err)
+		responses.ERROR(w, http.StatusBadRequest, err)
 		return
 	}
-	dataCreated, err := server.DB.CreatePromocode(data)
+	promocode, err := server.DB.CreatePromocode(&data)
+
 	if err != nil {
 		responses.ERROR(w, http.StatusInternalServerError, err)
 		return
 	}
-	responses.JSON(w, http.StatusCreated, dataCreated)
+	responses.JSON(w, http.StatusOK, promocode)
 }
 
 // GetPromoCode godoc
@@ -51,12 +52,13 @@ func (server *Server) CreatePromoCode(w http.ResponseWriter, r *http.Request) {
 // @Success 200 {array} doc.PromoCode
 // @Router /payment/promocode [get]
 func (server *Server) GetPromoCode(w http.ResponseWriter, r *http.Request) {
-	data, err := server.DB.FindAllPromocode()
+	data := []models.PromoCode{}
+	promocode, err := server.DB.FindAllPromocode(&data)
 	if err != nil {
 		responses.ERROR(w, http.StatusInternalServerError, err)
 		return
 	}
-	responses.JSON(w, http.StatusOK, data)
+	responses.JSON(w, http.StatusOK, promocode)
 }
 
 // GetPromoCodeById godoc
@@ -75,13 +77,12 @@ func (server *Server) GetPromoCodeById(w http.ResponseWriter, r *http.Request) {
 		responses.ERROR(w, http.StatusUnprocessableEntity, err)
 		return
 	}
-	data := models.PromoCode{}
-	data, err = server.DB.FindByIdPromocode(uint(pid))
+	promocode, err := server.DB.FindByIdPromocode(uint(pid))
 	if err != nil {
 		responses.ERROR(w, http.StatusNotFound, err)
 		return
 	}
-	responses.JSON(w, http.StatusOK, data)
+	responses.JSON(w, http.StatusOK, promocode)
 }
 
 // UpdatePromoCode godoc
@@ -101,8 +102,7 @@ func (server *Server) UpdatePromoCode(w http.ResponseWriter, r *http.Request) {
 		responses.ERROR(w, http.StatusNotFound, err)
 		return
 	}
-	dataReceived := models.PromoCode{}
-	dataReceived, err = server.DB.FindByIdPromocode(uint(pid))
+	promocode, err := server.DB.FindByIdPromocode(uint(pid))
 	if err != nil {
 		responses.ERROR(w, http.StatusNotFound, err)
 		return
@@ -120,21 +120,21 @@ func (server *Server) UpdatePromoCode(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	dataReceived.Title = d.Title
-	dataReceived.Code = d.Code
-	dataReceived.IsPercent = d.IsPercent
-	dataReceived.Discount = d.Discount
-	dataReceived.Limit = d.Limit
-	dataReceived.Count = d.Count
-	dataReceived.Active = d.Active
-	dataReceived.UpdatedAt = time.Now()
+	promocode.Title = d.Title
+	promocode.Code = d.Code
+	promocode.IsPercent = d.IsPercent
+	promocode.Discount = d.Discount
+	promocode.Limit = d.Limit
+	promocode.Count = d.Count
+	promocode.Active = d.Active
+	promocode.UpdatedAt = time.Now()
 
-	dataCreated, err := server.DB.UpdatePromocode(dataReceived)
+	promocodeCreated, err := server.DB.UpdatePromocode(promocode)
 	if err != nil {
 		responses.ERROR(w, http.StatusInternalServerError, err)
 		return
 	}
-	responses.JSON(w, http.StatusCreated, dataCreated)
+	responses.JSON(w, http.StatusCreated, promocodeCreated)
 }
 
 // DeletePromoCode godoc

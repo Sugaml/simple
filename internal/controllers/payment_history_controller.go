@@ -24,28 +24,21 @@ import (
 func (server *Server) CreatePaymentHistory(w http.ResponseWriter, r *http.Request) {
 	body, err := ioutil.ReadAll(r.Body)
 	if err != nil {
-		responses.ERROR(w, http.StatusUnprocessableEntity, err)
+		responses.ERROR(w, http.StatusInternalServerError, err)
 		return
 	}
 	data := models.PaymentHistory{}
 	err = json.Unmarshal(body, &data)
 	if err != nil {
-		responses.ERROR(w, http.StatusUnprocessableEntity, err)
+		responses.ERROR(w, http.StatusBadRequest, err)
 		return
 	}
-	/*data.Prepare()
-	err = data.Validate()
+	paymenthistory, err := server.DB.CreatePaymentHistory(&data)
 	if err != nil {
-		responses.ERROR(w, http.StatusUnprocessableEntity, err)
-		return
-	}*/
-	dataCreated, err := server.DB.CreatePaymentHistory(data)
-	if err != nil {
-		//formattedError := formaterror.FormatError(err.Error())
 		responses.ERROR(w, http.StatusInternalServerError, err)
 		return
 	}
-	responses.JSON(w, http.StatusCreated, dataCreated)
+	responses.JSON(w, http.StatusCreated, paymenthistory)
 }
 
 // GetPaymentHistory godoc
@@ -57,13 +50,13 @@ func (server *Server) CreatePaymentHistory(w http.ResponseWriter, r *http.Reques
 // @Success 200 {array} doc.PaymentHistory
 // @Router /payment/paymenthistory [get]
 func (server *Server) GetPaymentHistory(w http.ResponseWriter, r *http.Request) {
-	//data := []models.PaymentHistory{}
-	data, err := server.DB.FindAllPaymentHistory()
+	data := []models.PaymentHistory{}
+	datas, err := server.DB.FindAllPaymentHistory(&data)
 	if err != nil {
 		responses.ERROR(w, http.StatusInternalServerError, err)
 		return
 	}
-	responses.JSON(w, http.StatusOK, data)
+	responses.JSON(w, http.StatusOK, datas)
 }
 
 // GetPaymentHistoryById godoc
@@ -82,10 +75,9 @@ func (server *Server) GetPaymentHistoryById(w http.ResponseWriter, r *http.Reque
 		responses.ERROR(w, http.StatusUnprocessableEntity, err)
 		return
 	}
-	data := models.PaymentHistory{}
-	data, err = server.DB.FindByIdPaymentHistory(uint(pid))
+	data, err := server.DB.FindByIdPaymentHistory(uint(pid))
 	if err != nil {
-		responses.ERROR(w, http.StatusNotFound, err)
+		responses.ERROR(w, http.StatusInternalServerError, err)
 		return
 	}
 	responses.JSON(w, http.StatusOK, data)
@@ -107,8 +99,7 @@ func (server *Server) UpdatePaymentHistory(w http.ResponseWriter, r *http.Reques
 	if err != nil {
 		return
 	}
-	data := models.PaymentHistory{}
-	data, err = server.DB.FindByIdPaymentHistory(uint(pid))
+	data, err := server.DB.FindByIdPaymentHistory(uint(pid))
 	if err != nil {
 		responses.ERROR(w, http.StatusNotFound, err)
 		return

@@ -1,6 +1,8 @@
 package models
 
 import (
+	"errors"
+
 	"github.com/jinzhu/gorm"
 )
 
@@ -19,27 +21,46 @@ type Transaction struct {
 	Status    string   `gorm:"not null" json:"status"`
 }
 
-func (data *Transaction) Save(db *gorm.DB) (*Transaction, error) {
-	err = db.Model(&Transaction{}).Create(&data).Error
+func (d *DBStruct) CreateTransaction(data Transaction) (Transaction, error) {
+	err = d.db.Model(&Transaction{}).Create(&data).Error
 	if err != nil {
-		return &Transaction{}, err
+		return Transaction{}, err
 	}
 	return data, nil
 }
-
-func (data *Transaction) FindAll(db *gorm.DB) (*[]Transaction, error) {
+func (d *DBStruct) FindAllTransaction() ([]Transaction, error) {
 	datas := []Transaction{}
-	err = db.Model(&Transaction{}).Order("id desc").Find(&datas).Error
+	err = d.db.Model(&Transaction{}).Order("id desc").Find(&datas).Error
 	if err != nil {
-		return &[]Transaction{}, err
+		return []Transaction{}, err
 	}
-	return &datas, nil
+	return datas, nil
 }
 
-func (data *Transaction) Find(db *gorm.DB, pid uint64) (*Transaction, error) {
-	err = db.Model(&Transaction{}).Where("id = ?", pid).Take(&data).Error
+func (d *DBStruct) FindByIdTransaction(pid uint) (Transaction, error) {
+	data := Transaction{}
+	err = d.db.Model(&Transaction{}).Where("id = ?", pid).Take(&data).Error
 	if err != nil {
-		return &Transaction{}, err
+		return Transaction{}, err
 	}
 	return data, nil
+}
+
+func (d *DBStruct) UpdateTransaction(data Transaction) (Transaction, error) {
+	err = d.db.Model(&Transaction{}).Update(&data).Error
+	if err != nil {
+		return Transaction{}, err
+	}
+	return data, nil
+}
+
+func (d *DBStruct) DeleteTransaction(pid uint) (int64, error) {
+	result := d.db.Model(&Transaction{}).Where("id = ?", pid).Take(&Transaction{}).Delete(&Transaction{})
+	if result.Error != nil {
+		if gorm.IsRecordNotFoundError(result.Error) {
+			return 0, errors.New("promocode not found")
+		}
+		return 0, result.Error
+	}
+	return result.RowsAffected, nil
 }

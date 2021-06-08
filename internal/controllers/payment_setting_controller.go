@@ -29,10 +29,10 @@ func (server *Server) CreatePaymentSetting(w http.ResponseWriter, r *http.Reques
 	data := models.PaymentSetting{}
 	err = json.Unmarshal(body, &data)
 	if err != nil {
-		responses.ERROR(w, http.StatusNoContent, err)
+		responses.ERROR(w, http.StatusBadRequest, err)
 		return
 	}
-	paymentsetting, err := server.DB.CreatePaymentSetting(data)
+	paymentsetting, err := server.DB.CreatePaymentSetting(&data)
 
 	if err != nil {
 		responses.ERROR(w, http.StatusInternalServerError, err)
@@ -50,7 +50,8 @@ func (server *Server) CreatePaymentSetting(w http.ResponseWriter, r *http.Reques
 // @Success 200 {array} doc.PaymentSetting
 // @Router /payment/paymentsetting [get]
 func (server *Server) GetPaymentSetting(w http.ResponseWriter, r *http.Request) {
-	paymentsetting, err := server.DB.FindAllPaymentSetting()
+	data := []models.PaymentSetting{}
+	paymentsetting, err := server.DB.FindAllPaymentSetting(&data)
 	if err != nil {
 		responses.ERROR(w, http.StatusInternalServerError, err)
 		return
@@ -73,8 +74,7 @@ func (server *Server) GetPaymentSettingById(w http.ResponseWriter, r *http.Reque
 	if err != nil {
 		return
 	}
-	data := models.PaymentSetting{}
-	data, err = server.DB.FindByIdPaymentSetting(uint(pid))
+	data, err := server.DB.FindByIdPaymentSetting(uint(pid))
 	if err != nil {
 		responses.ERROR(w, http.StatusInternalServerError, err)
 		return
@@ -98,8 +98,7 @@ func (server *Server) UpdatePaymentSetting(w http.ResponseWriter, r *http.Reques
 	if err != nil {
 		return
 	}
-	data := models.PaymentSetting{}
-	data, err = server.DB.FindByIdPaymentSetting(uint(pid))
+	data, err := server.DB.FindByIdPaymentSetting(uint(pid))
 	if err != nil {
 		responses.ERROR(w, http.StatusNotFound, err)
 		return
@@ -134,7 +133,6 @@ func (server *Server) DeletePaymentSetting(w http.ResponseWriter, r *http.Reques
 	if err != nil {
 		return
 	}
-	//paymentsetting := models.PaymentSetting{}
 	_, err = server.DB.DeletePaymentSetting(uint(pid))
 	if err != nil {
 		responses.ERROR(w, http.StatusInternalServerError, err)

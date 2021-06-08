@@ -15,6 +15,49 @@ type Threshold struct {
 	Active         bool   `gorm:"not null" json:"active"`
 }
 
+func (d *DBStruct) CreateThreshold(data Threshold) (Threshold, error) {
+	err = d.db.Model(&Threshold{}).Create(&data).Error
+	if err != nil {
+		return Threshold{}, err
+	}
+	return data, nil
+}
+func (d *DBStruct) FindAllThreshold() ([]Threshold, error) {
+	datas := []Threshold{}
+	err = d.db.Model(&Threshold{}).Order("id desc").Find(&datas).Error
+	if err != nil {
+		return []Threshold{}, err
+	}
+	return datas, nil
+}
+
+func (d *DBStruct) FindByIdThreshold(pid uint) (Threshold, error) {
+	data := Threshold{}
+	err = d.db.Model(&Threshold{}).Where("id = ?", pid).Take(&data).Error
+	if err != nil {
+		return Threshold{}, err
+	}
+	return data, nil
+}
+
+func (d *DBStruct) UpdateThreshold(data Threshold) (Threshold, error) {
+	err = d.db.Model(&Threshold{}).Update(&data).Error
+	if err != nil {
+		return Threshold{}, err
+	}
+	return data, nil
+}
+
+func (d *DBStruct) DeleteThreshold(pid uint) (int64, error) {
+	result := d.db.Model(&Threshold{}).Where("id = ?", pid).Take(&Threshold{}).Delete(&Threshold{})
+	if result.Error != nil {
+		if gorm.IsRecordNotFoundError(result.Error) {
+			return 0, errors.New("promocode not found")
+		}
+		return 0, result.Error
+	}
+	return result.RowsAffected, nil
+}
 func (data *Threshold) Save(db *gorm.DB) (*Threshold, error) {
 	err = db.Model(&Threshold{}).Create(&data).Error
 	if err != nil {
