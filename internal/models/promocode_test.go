@@ -28,7 +28,7 @@ func TestPromoCodeCreate(t *testing.T) {
 	server.Mock.ExpectBegin()
 	server.Mock.MatchExpectationsInOrder(false)
 	fmt.Println(server.Mock.ExpectationsWereMet())
-	saved, err := server.store.CreatePromocode(&promocode)
+	saved, err := server.store.CreatePromocode(promocode)
 	if err != nil {
 		t.Errorf("this is the error getting the PromoCode: %v\n", err)
 		return
@@ -45,40 +45,40 @@ func TestPromoCodeCreate(t *testing.T) {
 
 func TestPromoCode_FindAll(t *testing.T) {
 	ed := time.Now()
-	promocodes := []PromoCode{
-		{
-			Title:      "test",
-			Code:       111,
-			IsPercent:  true,
-			ExpiryDate: ed,
-			Discount:   11,
-			Limit:      3,
-			Count:      1,
-			Active:     true,
-		},
-		{
-			Title:      "test1",
-			Code:       1111,
-			IsPercent:  true,
-			ExpiryDate: ed,
-			Discount:   10,
-			Limit:      2,
-			Count:      1,
-			Active:     false,
-		},
-	}
+	// promocodes := []PromoCode{
+	// 	{
+	// 		Title:      "test",
+	// 		Code:       111,
+	// 		IsPercent:  true,
+	// 		ExpiryDate: ed,
+	// 		Discount:   11,
+	// 		Limit:      3,
+	// 		Count:      1,
+	// 		Active:     true,
+	// 	},
+	// 	{
+	// 		Title:      "test1",
+	// 		Code:       1111,
+	// 		IsPercent:  true,
+	// 		ExpiryDate: ed,
+	// 		Discount:   10,
+	// 		Limit:      2,
+	// 		Count:      1,
+	// 		Active:     false,
+	// 	},
+	// }
 
 	server.Mock.ExpectQuery(regexp.QuoteMeta(`SELECT`)).WillReturnRows(
 		sqlmock.NewRows([]string{"id", "created_at", "updated_at", "title", "code", "is_percent", "discount",
 			"expiry_date", "limit", "count", "active"}).AddRow(11, time.Now(), time.Now(), "test", 111, true, 11,
 			ed, 3, 1, true))
-	pc, err := server.store.FindAllPromocode(&promocodes)
+	pc, err := server.store.FindAllPromocode()
 	fmt.Println(server.Mock.ExpectationsWereMet())
 	if err != nil {
 		t.Errorf("this is the error getting the promocodes: %v\n", err)
 		return
 	}
-	assert.Equal(t, len(*pc), len(promocodes))
+	assert.Equal(t, len(pc), 1)
 }
 
 func TestPromoCode_Find(t *testing.T) {
@@ -162,7 +162,7 @@ func TestPromoCode_Update(t *testing.T) {
 			AddRow(111, "name", 11, true, "test", time.Now(), time.Now()))
 	server.Mock.ExpectCommit()
 	server.Mock.MatchExpectationsInOrder(false)
-	upc, err := server.store.UpdatePromocode(&promocode)
+	upc, err := server.store.UpdatePromocode(promocode)
 	if err != nil {
 		t.Errorf("this is the error updating the user: %v\n", err)
 		return

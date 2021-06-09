@@ -27,7 +27,7 @@ func TestSavePaymentSetting(t *testing.T) {
 	server.Mock.ExpectBegin()
 	server.Mock.MatchExpectationsInOrder(false)
 	fmt.Println(server.Mock.ExpectationsWereMet())
-	paymentsetting, err := server.store.CreatePaymentSetting(&paymentsetting0)
+	paymentsetting, err := server.store.CreatePaymentSetting(paymentsetting0)
 	if err != nil {
 		t.Errorf("this is the error getting the Payment Setting: %v\n", err)
 		return
@@ -43,37 +43,37 @@ func TestSavePaymentSetting(t *testing.T) {
 }
 
 func TestFindAllPaymentSetting(t *testing.T) {
-	paymentsettings := []PaymentSetting{
-		{
-			UserID:      1,
-			Country:     "Nepal",
-			State:       "Bagmati",
-			City:        "Kathmandu",
-			Street:      "Lainchour",
-			Postal_Code: "44600",
-			Promocode:   "NewYear2021",
-		},
-		{
-			UserID:      1,
-			Country:     "Neoal",
-			State:       "Karnali",
-			City:        "Nepalgung",
-			Street:      "nepal",
-			Postal_Code: "44500",
-			Promocode:   "NewCode2021",
-		},
-	}
-	var testpaymentsettings *[]PaymentSetting
+	// paymentsettings := []PaymentSetting{
+	// 	{
+	// 		UserID:      1,
+	// 		Country:     "Nepal",
+	// 		State:       "Bagmati",
+	// 		City:        "Kathmandu",
+	// 		Street:      "Lainchour",
+	// 		Postal_Code: "44600",
+	// 		Promocode:   "NewYear2021",
+	// 	},
+	// 	{
+	// 		UserID:      1,
+	// 		Country:     "Neoal",
+	// 		State:       "Karnali",
+	// 		City:        "Nepalgung",
+	// 		Street:      "nepal",
+	// 		Postal_Code: "44500",
+	// 		Promocode:   "NewCode2021",
+	// 	},
+	// }
+	var testpaymentsettings []PaymentSetting
 	server.Mock.ExpectQuery(regexp.QuoteMeta(
 		`SELECT`)).WillReturnRows(sqlmock.NewRows([]string{"id", "user_id", "debit", "Credit", "balance", "invoice_id", "transaction_id", "created_at", "updated_at"}).AddRow(1, 1, 500, 500, 0, 1, 1, time.Now(), time.Now()))
-	testpaymentsettings, err = server.store.FindAllPaymentSetting(&paymentsettings)
+	testpaymentsettings, err = server.store.FindAllPaymentSetting()
 	fmt.Println(server.Mock.ExpectationsWereMet())
 
 	if err != nil {
 		t.Errorf("this is the error getting the users: %v\n", err)
 		return
 	}
-	assert.Equal(t, len(*testpaymentsettings), len(paymentsettings))
+	assert.Equal(t, len(testpaymentsettings), 1)
 }
 
 func TestFindPaymentSettingByID(t *testing.T) {
@@ -123,7 +123,7 @@ func TestUpdatePaymentSetting(t *testing.T) {
 	server.Mock.ExpectCommit()
 	server.Mock.MatchExpectationsInOrder(false)
 	paymentsetting.ID = 1
-	updatedInvoice, err := server.store.UpdatePaymentSetting(&paymentsetting)
+	updatedInvoice, err := server.store.UpdatePaymentSetting(paymentsetting)
 	if err != nil {
 		t.Errorf("this is the error updating the user: %v\n", err)
 		return
