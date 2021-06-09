@@ -101,6 +101,16 @@ func (server *Server) GetPaymentSetting(w http.ResponseWriter, r *http.Request) 
 // @Success 200 {object} doc.PaymentSetting
 // @Router /payment/paymentsetting/{id} [get]
 func (server *Server) GetPaymentSettingById(w http.ResponseWriter, r *http.Request) {
+	/*	mm := r.Header.Add("xx", "ssss")
+		// var s *http.Header
+
+		// s.Add("x", "sss")
+		// s = map[string][]string{
+
+		// 	"x-user-id": {"1"},
+		// }
+		ss:= r.Header.Get("xx")
+		fmt.Println("dd", mm)*/
 	_, err := strconv.ParseInt(r.Header.Get("x-user-id"), 10, 64)
 	if err != nil {
 		responses.ERROR(w, http.StatusInternalServerError, err)
@@ -148,13 +158,25 @@ func (server *Server) UpdatePaymentSetting(w http.ResponseWriter, r *http.Reques
 		responses.ERROR(w, http.StatusNotFound, err)
 		return
 	}
-	decoder := json.NewDecoder(r.Body)
-	if err := decoder.Decode(&data); err != nil {
-		responses.ERROR(w, http.StatusBadRequest, err)
+	// decoder := json.NewDecoder(r.Body)
+	// if err := decoder.Decode(&data); err != nil {
+	// 	responses.ERROR(w, http.StatusBadRequest, err)
+	// 	return
+	// }
+	// defer r.Body.Close()
+	body, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		responses.ERROR(w, http.StatusUnprocessableEntity, err)
 		return
 	}
-	defer r.Body.Close()
-	dataCreated, err := server.DB.UpdatePaymentSetting(data)
+	dataUpdate := models.PaymentSetting{}
+	err = json.Unmarshal(body, &dataUpdate)
+	if err != nil {
+		responses.ERROR(w, http.StatusUnprocessableEntity, err)
+		return
+	}
+	dataUpdate.ID = data.ID
+	dataCreated, err := server.DB.UpdatePaymentSetting(dataUpdate)
 	if err != nil {
 		responses.ERROR(w, http.StatusInternalServerError, err)
 		return

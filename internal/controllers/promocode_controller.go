@@ -148,5 +148,5 @@ func (server *Server) DeletePromoCode(w http.ResponseWriter, r *http.Request) {
 		responses.ERROR(w, http.StatusInternalServerError, err)
 		return
 	}
-	responses.JSON(w, http.StatusCreated, res)
+	responses.JSON(w, http.StatusNoContent, res)
 }
