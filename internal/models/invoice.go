@@ -14,7 +14,7 @@ type Invoice struct {
 	Date         time.Time       `gorm:"not null" json:"date"`
 	StartDate    time.Time       `gorm:"not null" json:"start_date"`
 	EndDate      time.Time       `gorm:"not null" json:"end_date"`
-	TotalCost    uint            `gorm:"not null" json:"total_cost"`
+	TotalCost    float64         `gorm:"not null" json:"total_cost"`
 	PromoCode    *PromoCode      `gorm:"foreignkey:PromoCodeID" json:"promocode"`
 	PromoCodeID  uint            `gorm:"null" json:"promo_code_id"`
 	Deduction    *Deduction      `gorm:"foreignkey:DeductionID" json:"deduction"`
@@ -22,22 +22,23 @@ type Invoice struct {
 	InvoiceItems *[]InvoiceItems `gorm:"null" json:"invoice_items"`
 }
 
-func (d *DBStruct) CreateInvoice(invoice Invoice) (Invoice, error) {
-	err = d.db.Model(&Invoice{}).Create(&invoice).Error
+func (d *DBStruct) CreateInvoice(data Invoice) (Invoice, error) {
+	err = d.db.Model(&Invoice{}).Create(&data).Error
 	if err != nil {
 		return Invoice{}, err
 	}
-	return invoice, nil
+	return data, nil
 }
 
-func (d *DBStruct) FindAllInvoice() ([]Invoice, error) {
-	datas := []Invoice{}
-	err = d.db.Model(&Invoice{}).Order("id desc").Find(&datas).Error
-	if err != nil {
-		return []Invoice{}, err
-	}
-	return datas, nil
-}
+// func (d *DBStruct) FindAllInvoice(uid uint64) (*[]Invoice, error) {
+// 	datas := []Invoice{}
+// 	err = db.Model(&Invoice{}).Find(&datas).Error
+// 	if err != nil {
+// 		return &[]Invoice{}, err
+// 	}
+// 	return &datas, nil
+// }
+
 func (d *DBStruct) FindByIdInvoice(pid uint) (Invoice, error) {
 	data := Invoice{}
 	err = d.db.Model(&Invoice{}).Where("id = ?", pid).Take(&data).Error
@@ -60,74 +61,22 @@ func (d *DBStruct) UpdateInvoice(data Invoice) (Invoice, error) {
 	if data.DeductionID != 0 {
 		invoice.DeductionID = data.DeductionID
 	}
+	invoice.StartDate = data.StartDate
+	invoice.EndDate = data.EndDate
 	err = d.db.Model(&Invoice{}).Where("id = ?", data.ID).Updates(invoice).Error
 	if err != nil {
 		return Invoice{}, err
 	}
 	return data, nil
 }
+
 func (d *DBStruct) DeleteInvoice(id uint) (int64, error) {
-	db := d.db.Model(&Invoice{}).Where("id = ?", id).Take(&Invoice{}).Delete(&Invoice{})
-	if db.Error != nil {
-		if gorm.IsRecordNotFoundError(db.Error) {
+	result := d.db.Model(&Invoice{}).Where("id = ?", id).Take(&Invoice{}).Delete(&Invoice{})
+	if result.Error != nil {
+		if gorm.IsRecordNotFoundError(result.Error) {
 			return 0, errors.New("Invoice not found")
 		}
-		return 0, db.Error
+		return 0, result.Error
 	}
-	return db.RowsAffected, nil
-}
-func (data *Invoice) Save(db *gorm.DB) (*Invoice, error) {
-	err = db.Model(&Invoice{}).Create(&data).Error
-	if err != nil {
-		return &Invoice{}, err
-	}
-	return data, nil
-}
-
-func (data *Invoice) FindAll(db *gorm.DB) (*[]Invoice, error) {
-	datas := []Invoice{}
-	err = db.Model(&Invoice{}).Order("id desc").Find(&datas).Error
-	if err != nil {
-		return &[]Invoice{}, err
-	}
-	return &datas, nil
-}
-
-func (data *Invoice) Find(db *gorm.DB, pid uint64) (*Invoice, error) {
-	err = db.Model(&Invoice{}).Where("id = ?", pid).Take(&data).Error
-	if err != nil {
-		return &Invoice{}, err
-	}
-	return data, nil
-}
-func (data *Invoice) Update(db *gorm.DB) (*Invoice, error) {
-	var invoice = Invoice{}
-	if data.UserID != 0 {
-		invoice.UserID = data.UserID
-	}
-	if data.TotalCost != 0 {
-		invoice.TotalCost = data.TotalCost
-	}
-	if data.PromoCodeID != 0 {
-		invoice.PromoCodeID = data.PromoCodeID
-	}
-	if data.DeductionID != 0 {
-		invoice.DeductionID = data.DeductionID
-	}
-	err = db.Model(&Invoice{}).Where("id = ?", data.ID).Updates(invoice).Error
-	if err != nil {
-		return &Invoice{}, err
-	}
-	return data, nil
-}
-
-func (data *Invoice) Delete(db *gorm.DB, id uint64) (int64, error) {
-	db = db.Model(&Invoice{}).Where("id = ?", id).Take(&Invoice{}).Delete(&Invoice{})
-	if db.Error != nil {
-		if gorm.IsRecordNotFoundError(db.Error) {
-			return 0, errors.New("Invoice not found")
-		}
-		return 0, db.Error
-	}
-	return db.RowsAffected, nil
+	return result.RowsAffected, nil
 }

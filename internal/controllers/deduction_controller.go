@@ -82,8 +82,7 @@ func (server *Server) GetDeductionById(w http.ResponseWriter, r *http.Request) {
 		responses.ERROR(w, http.StatusUnprocessableEntity, err)
 		return
 	}
-	dataReceived := models.Deduction{}
-	dataReceived, err = server.DB.FindByIdDeduction(uint(pid))
+	dataReceived, err := server.DB.FindByIdDeduction(uint(pid))
 	if err != nil {
 		responses.ERROR(w, http.StatusNotFound, err)
 		return
@@ -108,8 +107,7 @@ func (server *Server) UpdateDeduction(w http.ResponseWriter, r *http.Request) {
 		responses.ERROR(w, http.StatusNotFound, err)
 		return
 	}
-	dataReceived := models.Deduction{}
-	dataReceived, err = server.DB.FindByIdDeduction(uint(pid))
+	dataReceived, err := server.DB.FindByIdDeduction(uint(pid))
 	if err != nil {
 		responses.ERROR(w, http.StatusNotFound, err)
 		return
@@ -179,15 +177,15 @@ func (server *Server) UpdateDeduction(w http.ResponseWriter, r *http.Request) {
 // @Router /payment/deduction/{id} [delete]
 func (server *Server) DeleteDeduction(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
-	aid := vars["id"]
-	pid, err := strconv.Atoi(aid)
+	pid, err := strconv.ParseUint(vars["id"], 10, 64)
 	if err != nil {
+		responses.ERROR(w, http.StatusNotFound, err)
 		return
 	}
-	_, err = server.DB.DeleteDeduction(uint(pid))
+	res, err := server.DB.DeleteDeduction(uint(pid))
 	if err != nil {
 		responses.ERROR(w, http.StatusInternalServerError, err)
 		return
 	}
-	responses.JSON(w, http.StatusNoContent, nil)
+	responses.JSON(w, http.StatusCreated, res)
 }

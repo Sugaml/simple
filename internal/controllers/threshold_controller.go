@@ -4,7 +4,6 @@ import (
 	"01cloud-payment/internal/models"
 	"01cloud-payment/pkg/responses"
 	"encoding/json"
-	"errors"
 	"strconv"
 
 	"io/ioutil"
@@ -19,21 +18,28 @@ import (
 // @Tags Threshold
 // @Accept  json
 // @Produce  json
+// @Param x-user-id header integer true "x-user-id"
 // @Param body body doc.Threshold true "Create Threshold"
 // @Success 201 {object} doc.Threshold
 // @Router /payment/threshold [post]
 func (server *Server) CreateThreshold(w http.ResponseWriter, r *http.Request) {
+	userID, err := strconv.ParseInt(r.Header.Get("x-user-id"), 10, 64)
+	if err != nil {
+		responses.ERROR(w, http.StatusInternalServerError, err)
+		return
+	}
 	body, err := ioutil.ReadAll(r.Body)
 	if err != nil {
 		responses.ERROR(w, http.StatusUnprocessableEntity, err)
 		return
 	}
-	data := models.Threshold{}
+	data := models.PaymentThreshold{}
 	err = json.Unmarshal(body, &data)
 	if err != nil {
 		responses.ERROR(w, http.StatusUnprocessableEntity, err)
 		return
 	}
+	data.UserID = uint(userID)
 	dataCreated, err := server.DB.CreateThreshold(data)
 	if err != nil {
 		responses.ERROR(w, http.StatusInternalServerError, err)
@@ -48,14 +54,16 @@ func (server *Server) CreateThreshold(w http.ResponseWriter, r *http.Request) {
 // @Tags Threshold
 // @Accept  json
 // @Produce  json
+// @Param x-user-id header integer true "x-user-id"
 // @Success 200 {array} doc.Threshold
 // @Router /payment/threshold [get]
 func (server *Server) GetThreshold(w http.ResponseWriter, r *http.Request) {
-	datas, err := server.DB.FindAllThreshold()
+	userID, err := strconv.ParseInt(r.Header.Get("x-user-id"), 10, 64)
 	if err != nil {
 		responses.ERROR(w, http.StatusInternalServerError, err)
 		return
 	}
+	datas, _ := server.DB.FindByUserIDThreshold(uint(userID))
 	responses.JSON(w, http.StatusOK, datas)
 }
 
@@ -65,18 +73,23 @@ func (server *Server) GetThreshold(w http.ResponseWriter, r *http.Request) {
 // @Tags Threshold
 // @Accept  json
 // @Produce  json
+// @Param x-user-id header integer true "x-user-id"
 // @Param id path int true "Threshold id"
 // @Success 200 {object} doc.Threshold
 // @Router /payment/threshold/{id} [get]
 func (server *Server) GetThresholdById(w http.ResponseWriter, r *http.Request) {
+	_, err := strconv.ParseInt(r.Header.Get("x-user-id"), 10, 64)
+	if err != nil {
+		responses.ERROR(w, http.StatusInternalServerError, err)
+		return
+	}
 	vars := mux.Vars(r)
 	pid, err := strconv.ParseUint(vars["id"], 10, 64)
 	if err != nil {
 		responses.ERROR(w, http.StatusUnprocessableEntity, err)
 		return
 	}
-	dataReceived := models.Threshold{}
-	dataReceived, err = server.DB.FindByIdThreshold(uint(pid))
+	dataReceived, err := server.DB.FindByIdThreshold(uint(pid))
 	if err != nil {
 		responses.ERROR(w, http.StatusNotFound, err)
 		return
@@ -90,31 +103,48 @@ func (server *Server) GetThresholdById(w http.ResponseWriter, r *http.Request) {
 // @Tags Threshold
 // @Accept  json
 // @Produce  json
+// @Param x-user-id header integer true "x-user-id"
 // @Param id path int true "Threshold id"
 // @Param body body doc.Threshold true "Update Threshold"
 // @Success 200 {object} doc.Threshold
 // @Router /payment/threshold/{id} [put]
 func (server *Server) UpdateThreshold(w http.ResponseWriter, r *http.Request) {
+	_, err := strconv.ParseInt(r.Header.Get("x-user-id"), 10, 64)
+	if err != nil {
+		responses.ERROR(w, http.StatusInternalServerError, err)
+		return
+	}
 	vars := mux.Vars(r)
 	pid, err := strconv.ParseUint(vars["id"], 10, 64)
 	if err != nil {
 		responses.ERROR(w, http.StatusUnprocessableEntity, err)
 		return
 	}
-	data := models.Threshold{}
+	data := models.PaymentThreshold{}
 	data, err = server.DB.FindByIdThreshold(uint(pid))
 	if err != nil {
-		responses.ERROR(w, http.StatusNotFound, errors.New("threshold not found"))
+		responses.ERROR(w, http.StatusNotFound, err)
 		return
 	}
-	dataUpdate := models.Threshold{}
-	dataUpdate, err = server.DB.UpdateThreshold(data)
+	body, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		responses.ERROR(w, http.StatusUnprocessableEntity, err)
+		return
+	}
+	dataUpdate := models.PaymentThreshold{}
+	err = json.Unmarshal(body, &dataUpdate)
+	if err != nil {
+		responses.ERROR(w, http.StatusUnprocessableEntity, err)
+		return
+	}
+	dataUpdate.ID = data.ID
+	dataUpdated, err := server.DB.UpdateThreshold(dataUpdate)
 	if err != nil {
 		//formattedError := formaterror.FormatError(err.Error())
 		responses.ERROR(w, http.StatusInternalServerError, err)
 		return
 	}
-	responses.JSON(w, http.StatusOK, dataUpdate)
+	responses.JSON(w, http.StatusOK, dataUpdated)
 }
 
 // DeleteThreshold godoc
@@ -123,20 +153,26 @@ func (server *Server) UpdateThreshold(w http.ResponseWriter, r *http.Request) {
 // @Tags Threshold
 // @Accept  json
 // @Produce  json
+// @Param x-user-id header integer true "x-user-id"
 // @Param id path int true "Threshold id"
 // @Success 204 {object} doc.Threshold
 // @Router /payment/threshold/{id} [delete]
 func (server *Server) DeleteThreshold(w http.ResponseWriter, r *http.Request) {
-	vars := mux.Vars(r)
-	aid := vars["id"]
-	pid, err := strconv.Atoi(aid)
-	if err != nil {
-		return
-	}
-	_, err = server.DB.DeleteThreshold(uint(pid))
+	_, err := strconv.ParseInt(r.Header.Get("x-user-id"), 10, 64)
 	if err != nil {
 		responses.ERROR(w, http.StatusInternalServerError, err)
 		return
 	}
-	responses.JSON(w, http.StatusNoContent, nil)
+	vars := mux.Vars(r)
+	pid, err := strconv.ParseUint(vars["id"], 10, 64)
+	if err != nil {
+		responses.ERROR(w, http.StatusUnprocessableEntity, err)
+		return
+	}
+	_, err = server.DB.DeleteThreshold(uint(pid))
+	if err != nil {
+		responses.ERROR(w, http.StatusBadRequest, err)
+		return
+	}
+	responses.JSON(w, http.StatusNoContent, "")
 }

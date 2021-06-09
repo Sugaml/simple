@@ -1,45 +1,56 @@
 package models
 
 import (
+	"time"
+
 	"github.com/jinzhu/gorm"
 )
 
 type Store interface {
-	CreatePaymentSetting(data *PaymentSetting) (*PaymentSetting, error)
-	FindAllPaymentSetting(datas *[]PaymentSetting) (*[]PaymentSetting, error)
-	FindByIdPaymentSetting(uid uint) (*PaymentSetting, error)
-	UpdatePaymentSetting(datas *PaymentSetting) (*PaymentSetting, error)
+	CreatePaymentSetting(data PaymentSetting) (PaymentSetting, error)
+	FindAllPaymentSetting() ([]PaymentSetting, error)
+	FindByUserIDPaymentSetting(uid uint) (PaymentSetting, error)
+	FindByIdPaymentSetting(uid uint) (PaymentSetting, error)
+	UpdatePaymentSetting(data PaymentSetting) (PaymentSetting, error)
 	DeletePaymentSetting(pid uint) (int64, error)
 
-	CreateInvoice(invoice Invoice) (Invoice, error)
-	FindAllInvoice() ([]Invoice, error)
+	CreateInvoice(data Invoice) (Invoice, error)
 	FindByIdInvoice(uid uint) (Invoice, error)
 	UpdateInvoice(data Invoice) (Invoice, error)
 	DeleteInvoice(pid uint) (int64, error)
 
-	CreatePaymentHistory(data *PaymentHistory) (*PaymentHistory, error)
-	FindAllPaymentHistory(datas *[]PaymentHistory) (*[]PaymentHistory, error)
-	FindByIdPaymentHistory(uid uint) (*PaymentHistory, error)
-	UpdatePaymentHistory(data *PaymentHistory) (*PaymentHistory, error)
-	DeletePaymentHistory(pid uint) (int64, error)
-
-	CreatePromocode(data *PromoCode) (*PromoCode, error)
-	FindAllPromocode(datas *[]PromoCode) (*[]PromoCode, error)
-	FindByIdPromocode(uid uint) (*PromoCode, error)
-	UpdatePromocode(data *PromoCode) (*PromoCode, error)
+	CreatePromocode(data PromoCode) (PromoCode, error)
+	FindAllPromocode() ([]PromoCode, error)
+	FindByIdPromocode(uid uint) (PromoCode, error)
+	FindByPromoCode(promocode string) (PromoCode, error)
+	UpdatePromocode(data PromoCode) (PromoCode, error)
 	DeletePromocode(pid uint) (int64, error)
 
 	CreateDeduction(data Deduction) (Deduction, error)
 	FindAllDeduction() ([]Deduction, error)
 	FindByIdDeduction(uid uint) (Deduction, error)
+	FindByCountryDeduction(country string) (Deduction, error)
 	UpdateDeduction(data Deduction) (Deduction, error)
 	DeleteDeduction(pid uint) (int64, error)
 
-	CreateThreshold(data Threshold) (Threshold, error)
-	FindAllThreshold() ([]Threshold, error)
-	FindByIdThreshold(uid uint) (Threshold, error)
-	UpdateThreshold(data Threshold) (Threshold, error)
+	CreateInvoiceItems(data InvoiceItems) (InvoiceItems, error)
+	FindAllInvoiceItems() ([]InvoiceItems, error)
+	FindByIdInvoiceItems(uid uint) (InvoiceItems, error)
+	UpdateInvoiceItems(data InvoiceItems) (InvoiceItems, error)
+	DeleteInvoiceItems(pid uint) (int64, error)
+
+	CreateThreshold(data PaymentThreshold) (PaymentThreshold, error)
+	FindAllThreshold() ([]PaymentThreshold, error)
+	FindByIdThreshold(uid uint) (PaymentThreshold, error)
+	FindByUserIDThreshold(uid uint) (PaymentThreshold, error)
+	UpdateThreshold(data PaymentThreshold) (PaymentThreshold, error)
 	DeleteThreshold(pid uint) (int64, error)
+
+	CreatePaymentHistory(data PaymentHistory) (PaymentHistory, error)
+	FindByUserIDPaymentHistory(uid uint) ([]PaymentHistory, error)
+
+	FindAllByUser(userID uint, startDate, endDate time.Time) ([]Project, error)
+	FindSubscription(pid uint) (Subscription, error)
 
 	CreateTransaction(data Transaction) (Transaction, error)
 	FindAllTransaction() ([]Transaction, error)

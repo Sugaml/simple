@@ -25,12 +25,13 @@ type Subscription struct {
 	LoadBalancer uint64 `gorm:"default:0;" json:"load_balancer"`
 }
 
-func (data *Subscription) Find(db *gorm.DB, pid uint64) (*Subscription, error) {
-	err = db.Model(&Subscription{}).
+func (d *DBStruct) FindSubscription(pid uint) (Subscription, error) {
+	data := Subscription{}
+	err = d.db.Model(&Subscription{}).
 		Where("id = ?", pid).
 		Take(&data).Error
 	if err != nil {
-		return &Subscription{}, err
+		return Subscription{}, err
 	}
 	return data, nil
 }

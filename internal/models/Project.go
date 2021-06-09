@@ -30,8 +30,8 @@ type Project struct {
 	UserID         uint64         `gorm:"not null" json:"user_id"`
 }
 
-func (data *Project) FindAllByUser(db *gorm.DB, userID uint, startDate, endDate time.Time) ([]Project, error) {
+func (d *DBStruct) FindAllByUser(userID uint, startDate, endDate time.Time) ([]Project, error) {
 	dataList := []Project{}
-	db.Raw("select * from projects WHERE projects.id IN (select id from projects where user_id=?) and (projects.deleted_at BETWEEN ?::timestamp AND ?::timestamp or projects.deleted_at is null)", userID, startDate, endDate).Scan(&dataList)
+	d.db.Raw("select * from projects WHERE projects.id IN (select id from projects where user_id=?) and (projects.deleted_at BETWEEN ?::timestamp AND ?::timestamp or projects.deleted_at is null)", userID, startDate, endDate).Scan(&dataList)
 	return dataList, nil
 }

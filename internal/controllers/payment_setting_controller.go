@@ -17,46 +17,78 @@ import (
 // @Tags PaymentSetting
 // @Accept  json
 // @Produce  json
+// @Param x-user-id header integer true "x-user-id"
 // @Param body body doc.PaymentSetting true "Create PaymentSetting"
 // @Success 201 {object} doc.PaymentSetting
 // @Router /payment/paymentsetting [post]
 func (server *Server) CreatePaymentSetting(w http.ResponseWriter, r *http.Request) {
-	body, err := ioutil.ReadAll(r.Body)
+	userID, err := strconv.ParseInt(r.Header.Get("x-user-id"), 10, 64)
 	if err != nil {
 		responses.ERROR(w, http.StatusInternalServerError, err)
+		return
+	}
+	body, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		responses.ERROR(w, http.StatusUnprocessableEntity, err)
 		return
 	}
 	data := models.PaymentSetting{}
 	err = json.Unmarshal(body, &data)
 	if err != nil {
-		responses.ERROR(w, http.StatusBadRequest, err)
+		responses.ERROR(w, http.StatusUnprocessableEntity, err)
 		return
 	}
-	paymentsetting, err := server.DB.CreatePaymentSetting(&data)
+	data.UserID = uint(userID)
+	dataCreated, err := server.DB.CreatePaymentSetting(data)
+	if err != nil {
+		//formattedError := formaterror.FormatError(err.Error())
+		responses.ERROR(w, http.StatusInternalServerError, err)
+		return
+	}
+	responses.JSON(w, http.StatusCreated, dataCreated)
+}
 
+/*func (server *Server) SavePromoCode(w http.ResponseWriter, r *http.Request) {
+	body, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		responses.ERROR(w, http.StatusUnprocessableEntity, err)
+		return
+	}
+	data := models.PaymentSetting{}
+
+	err = json.Unmarshal(body, &data)
+
+	if err != nil {
+		responses.ERROR(w, http.StatusUnprocessableEntity, err)
+		return
+	}
+	dataPromo := models.PromoCode{}
+	dataCreated, err := dataPromo.FindByPromoCode(server.DB, data.Promocode)
 	if err != nil {
 		responses.ERROR(w, http.StatusInternalServerError, err)
 		return
 	}
-	responses.JSON(w, http.StatusOK, paymentsetting)
-}
+	responses.JSON(w, http.StatusCreated, dataCreated)
+}*/
 
 // GetPaymentSetting godoc
 // @Summary Get PaymentSetting
 // @Description Get list of PaymentSetting
 // @Tags PaymentSetting
+// @Param x-user-id header integer true "x-user-id"
 // @Accept  json
 // @Produce  json
 // @Success 200 {array} doc.PaymentSetting
 // @Router /payment/paymentsetting [get]
 func (server *Server) GetPaymentSetting(w http.ResponseWriter, r *http.Request) {
-	data := []models.PaymentSetting{}
-	paymentsetting, err := server.DB.FindAllPaymentSetting(&data)
+	userID, err := strconv.ParseInt(r.Header.Get("x-user-id"), 10, 64)
 	if err != nil {
 		responses.ERROR(w, http.StatusInternalServerError, err)
 		return
 	}
-	responses.JSON(w, http.StatusOK, paymentsetting)
+	datas, _ := server.DB.FindByUserIDPaymentSetting(uint(userID))
+
+	responses.JSON(w, http.StatusOK, datas)
 }
 
 // GetPaymentSettingById godoc
@@ -69,17 +101,23 @@ func (server *Server) GetPaymentSetting(w http.ResponseWriter, r *http.Request) 
 // @Success 200 {object} doc.PaymentSetting
 // @Router /payment/paymentsetting/{id} [get]
 func (server *Server) GetPaymentSettingById(w http.ResponseWriter, r *http.Request) {
-	vars := mux.Vars(r)
-	pid, err := strconv.Atoi(vars["id"])
-	if err != nil {
-		return
-	}
-	data, err := server.DB.FindByIdPaymentSetting(uint(pid))
+	_, err := strconv.ParseInt(r.Header.Get("x-user-id"), 10, 64)
 	if err != nil {
 		responses.ERROR(w, http.StatusInternalServerError, err)
 		return
 	}
-	responses.JSON(w, http.StatusOK, data)
+	vars := mux.Vars(r)
+	pid, err := strconv.ParseUint(vars["id"], 10, 64)
+	if err != nil {
+		responses.ERROR(w, http.StatusUnprocessableEntity, err)
+		return
+	}
+	dataReceived, err := server.DB.FindByIdPaymentSetting(uint(pid))
+	if err != nil {
+		responses.ERROR(w, http.StatusNotFound, err)
+		return
+	}
+	responses.JSON(w, http.StatusOK, dataReceived)
 }
 
 // UpdatePaymentSetting godoc
@@ -88,14 +126,21 @@ func (server *Server) GetPaymentSettingById(w http.ResponseWriter, r *http.Reque
 // @Tags PaymentSetting
 // @Accept  json
 // @Produce  json
+// @Param x-user-id header integer true "x-user-id"
 // @Param id path int true "PaymentSetting id"
 // @Param body body doc.PaymentSetting true "Update PaymentSetting"
 // @Success 200 {object} doc.PaymentSetting
 // @Router /payment/paymentsetting/{id} [put]
 func (server *Server) UpdatePaymentSetting(w http.ResponseWriter, r *http.Request) {
+	_, err := strconv.ParseInt(r.Header.Get("x-user-id"), 10, 64)
+	if err != nil {
+		responses.ERROR(w, http.StatusInternalServerError, err)
+		return
+	}
 	vars := mux.Vars(r)
 	pid, err := strconv.ParseUint(vars["id"], 10, 64)
 	if err != nil {
+		responses.ERROR(w, http.StatusNotFound, err)
 		return
 	}
 	data, err := server.DB.FindByIdPaymentSetting(uint(pid))
@@ -109,12 +154,12 @@ func (server *Server) UpdatePaymentSetting(w http.ResponseWriter, r *http.Reques
 		return
 	}
 	defer r.Body.Close()
-	dataUpdated, err := server.DB.UpdatePaymentSetting(data)
+	dataCreated, err := server.DB.UpdatePaymentSetting(data)
 	if err != nil {
 		responses.ERROR(w, http.StatusInternalServerError, err)
 		return
 	}
-	responses.JSON(w, http.StatusCreated, dataUpdated)
+	responses.JSON(w, http.StatusCreated, dataCreated)
 }
 
 // DeletePaymentSetting godoc
@@ -127,13 +172,15 @@ func (server *Server) UpdatePaymentSetting(w http.ResponseWriter, r *http.Reques
 // @Success 204 {object} doc.PaymentSetting
 // @Router /payment/paymentsetting/{id} [delete]
 func (server *Server) DeletePaymentSetting(w http.ResponseWriter, r *http.Request) {
-	vars := mux.Vars(r)
-	aid := vars["id"]
-	pid, err := strconv.Atoi(aid)
+	_, err := strconv.ParseInt(r.Header.Get("x-user-id"), 10, 64)
 	if err != nil {
+		responses.ERROR(w, http.StatusInternalServerError, err)
 		return
 	}
-	_, err = server.DB.DeletePaymentSetting(uint(pid))
+	vars := mux.Vars(r)
+	aid := vars["id"]
+	id, _ := strconv.ParseUint(aid, 10, 64)
+	_, err = server.DB.DeletePaymentSetting(uint(id))
 	if err != nil {
 		responses.ERROR(w, http.StatusInternalServerError, err)
 		return
