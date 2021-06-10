@@ -60,10 +60,14 @@ func (server *Server) CreateThreshold(w http.ResponseWriter, r *http.Request) {
 func (server *Server) GetThreshold(w http.ResponseWriter, r *http.Request) {
 	userID, err := strconv.ParseInt(r.Header.Get("x-user-id"), 10, 64)
 	if err != nil {
+		responses.ERROR(w, http.StatusUnprocessableEntity, err)
+		return
+	}
+	datas, err := server.DB.FindByUserIDThreshold(uint(userID))
+	if err != nil {
 		responses.ERROR(w, http.StatusInternalServerError, err)
 		return
 	}
-	datas, _ := server.DB.FindByUserIDThreshold(uint(userID))
 	responses.JSON(w, http.StatusOK, datas)
 }
 
@@ -80,7 +84,7 @@ func (server *Server) GetThreshold(w http.ResponseWriter, r *http.Request) {
 func (server *Server) GetThresholdById(w http.ResponseWriter, r *http.Request) {
 	_, err := strconv.ParseInt(r.Header.Get("x-user-id"), 10, 64)
 	if err != nil {
-		responses.ERROR(w, http.StatusInternalServerError, err)
+		responses.ERROR(w, http.StatusUnprocessableEntity, err)
 		return
 	}
 	vars := mux.Vars(r)
@@ -91,7 +95,7 @@ func (server *Server) GetThresholdById(w http.ResponseWriter, r *http.Request) {
 	}
 	dataReceived, err := server.DB.FindByIdThreshold(uint(pid))
 	if err != nil {
-		responses.ERROR(w, http.StatusNotFound, err)
+		responses.ERROR(w, http.StatusInternalServerError, err)
 		return
 	}
 	responses.JSON(w, http.StatusOK, dataReceived)
@@ -123,7 +127,7 @@ func (server *Server) UpdateThreshold(w http.ResponseWriter, r *http.Request) {
 	data := models.PaymentThreshold{}
 	data, err = server.DB.FindByIdThreshold(uint(pid))
 	if err != nil {
-		responses.ERROR(w, http.StatusNotFound, err)
+		responses.ERROR(w, http.StatusInternalServerError, err)
 		return
 	}
 	body, err := ioutil.ReadAll(r.Body)
@@ -144,7 +148,7 @@ func (server *Server) UpdateThreshold(w http.ResponseWriter, r *http.Request) {
 		responses.ERROR(w, http.StatusInternalServerError, err)
 		return
 	}
-	responses.JSON(w, http.StatusOK, dataUpdated)
+	responses.JSON(w, http.StatusCreated, dataUpdated)
 }
 
 // DeleteThreshold godoc
@@ -171,8 +175,8 @@ func (server *Server) DeleteThreshold(w http.ResponseWriter, r *http.Request) {
 	}
 	_, err = server.DB.DeleteThreshold(uint(pid))
 	if err != nil {
-		responses.ERROR(w, http.StatusBadRequest, err)
+		responses.ERROR(w, http.StatusInternalServerError, err)
 		return
 	}
-	responses.JSON(w, http.StatusNoContent, "")
+	responses.JSON(w, http.StatusNoContent, "successfully deleted")
 }
