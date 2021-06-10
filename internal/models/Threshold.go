@@ -81,7 +81,7 @@ func (d *DBStruct) DeleteThreshold(id uint) (int64, error) {
 	result := d.db.Model(&PaymentThreshold{}).Where("id = ?", id).Take(&PaymentThreshold{}).Delete(&PaymentThreshold{})
 	if result.Error != nil {
 		if gorm.IsRecordNotFoundError(result.Error) {
-			return 0, errors.New("Threshold not found")
+			return 0, errors.New("threshold not found")
 		}
 		return 0, result.Error
 	}

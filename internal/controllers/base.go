@@ -20,7 +20,6 @@ type Server struct {
 }
 
 func NewServer(config util.Config, store models.Store) (*Server, error) {
-
 	server := &Server{
 		config: config,
 		DB:     store,

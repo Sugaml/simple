@@ -19,7 +19,6 @@ type TestServer struct {
 }
 
 var server TestServer
-var invoiceInstance = Invoice{}
 
 func TestMain(m *testing.M) {
 	err = godotenv.Load(os.ExpandEnv("../../app.env"))
@@ -40,10 +39,8 @@ func Database() {
 	}
 	server.DB, err = gorm.Open(TestDbDriver, db)
 	if err != nil {
-		fmt.Printf("Cannot connect to %s database\n", TestDbDriver)
+		fmt.Printf("Cannot connect to mock %s database\n", TestDbDriver)
 		log.Fatal("This is the error:", err)
-	} else {
-		fmt.Printf("We are connected to the %s database\n", TestDbDriver)
 	}
 	server.store = NewDB(server.DB)
 }
