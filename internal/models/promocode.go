@@ -56,7 +56,6 @@ func (d *DBStruct) FindByPromoCode(promocode string) (PromoCode, error) {
 
 func (d *DBStruct) UpdatePromocode(data PromoCode) (PromoCode, error) {
 	threshold := map[string]interface{}{
-
 		"is_percent":  data.IsPercent,
 		"active":      data.Active,
 		"expiry_date": data.ExpiryDate,
@@ -76,7 +75,6 @@ func (d *DBStruct) UpdatePromocode(data PromoCode) (PromoCode, error) {
 	if data.Count != 0 {
 		threshold["count"] = data.Count
 	}
-
 	err = d.db.Model(&PromoCode{}).Where("id= ?", data.ID).Updates(threshold).Error
 	if err != nil {
 		return PromoCode{}, err

@@ -30,7 +30,7 @@ func (server *Server) CreatePromoCode(w http.ResponseWriter, r *http.Request) {
 	data := models.PromoCode{}
 	err = json.Unmarshal(body, &data)
 	if err != nil {
-		responses.ERROR(w, http.StatusBadRequest, err)
+		responses.ERROR(w, http.StatusUnprocessableEntity, err)
 		return
 	}
 	promocode, err := server.DB.CreatePromocode(data)
@@ -39,7 +39,7 @@ func (server *Server) CreatePromoCode(w http.ResponseWriter, r *http.Request) {
 		responses.ERROR(w, http.StatusInternalServerError, err)
 		return
 	}
-	responses.JSON(w, http.StatusOK, promocode)
+	responses.JSON(w, http.StatusCreated, promocode)
 }
 
 // GetPromoCode godoc
@@ -77,7 +77,7 @@ func (server *Server) GetPromoCodeById(w http.ResponseWriter, r *http.Request) {
 	}
 	dataReceived, err := server.DB.FindByIdPromocode(uint(pid))
 	if err != nil {
-		responses.ERROR(w, http.StatusNotFound, err)
+		responses.ERROR(w, http.StatusInternalServerError, err)
 		return
 	}
 	responses.JSON(w, http.StatusOK, dataReceived)
@@ -102,7 +102,7 @@ func (server *Server) UpdatePromoCode(w http.ResponseWriter, r *http.Request) {
 	}
 	dataReceived, err := server.DB.FindByIdPromocode(uint(pid))
 	if err != nil {
-		responses.ERROR(w, http.StatusNotFound, err)
+		responses.ERROR(w, http.StatusInternalServerError, err)
 		return
 	}
 

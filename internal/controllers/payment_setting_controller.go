@@ -145,13 +145,13 @@ func (server *Server) GetPaymentSettingById(w http.ResponseWriter, r *http.Reque
 func (server *Server) UpdatePaymentSetting(w http.ResponseWriter, r *http.Request) {
 	_, err := strconv.ParseInt(r.Header.Get("x-user-id"), 10, 64)
 	if err != nil {
-		responses.ERROR(w, http.StatusInternalServerError, err)
+		responses.ERROR(w, http.StatusUnprocessableEntity, err)
 		return
 	}
 	vars := mux.Vars(r)
 	pid, err := strconv.ParseUint(vars["id"], 10, 64)
 	if err != nil {
-		responses.ERROR(w, http.StatusNotFound, err)
+		responses.ERROR(w, http.StatusUnprocessableEntity, err)
 		return
 	}
 	data, err := server.DB.FindByIdPaymentSetting(uint(pid))

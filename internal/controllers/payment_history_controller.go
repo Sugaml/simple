@@ -22,6 +22,10 @@ func (server *Server) GetPaymentHistory(w http.ResponseWriter, r *http.Request) 
 		responses.ERROR(w, http.StatusInternalServerError, err)
 		return
 	}
-	datas, _ := server.DB.FindByUserIDPaymentHistory(uint(userID))
+	datas, err := server.DB.FindByUserIDPaymentHistory(uint(userID))
+	if err != nil {
+		responses.ERROR(w, http.StatusInternalServerError, err)
+		return
+	}
 	responses.JSON(w, http.StatusOK, datas)
 }
