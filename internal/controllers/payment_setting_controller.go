@@ -83,11 +83,13 @@ func (server *Server) CreatePaymentSetting(w http.ResponseWriter, r *http.Reques
 func (server *Server) GetPaymentSetting(w http.ResponseWriter, r *http.Request) {
 	userID, err := strconv.ParseInt(r.Header.Get("x-user-id"), 10, 64)
 	if err != nil {
+		return
+	}
+	datas, err := server.DB.FindByUserIDPaymentSetting(uint(userID))
+	if err != nil {
 		responses.ERROR(w, http.StatusInternalServerError, err)
 		return
 	}
-	datas, _ := server.DB.FindByUserIDPaymentSetting(uint(userID))
-
 	responses.JSON(w, http.StatusOK, datas)
 }
 
@@ -113,18 +115,17 @@ func (server *Server) GetPaymentSettingById(w http.ResponseWriter, r *http.Reque
 		fmt.Println("dd", mm)*/
 	_, err := strconv.ParseInt(r.Header.Get("x-user-id"), 10, 64)
 	if err != nil {
-		responses.ERROR(w, http.StatusInternalServerError, err)
 		return
 	}
 	vars := mux.Vars(r)
 	pid, err := strconv.ParseUint(vars["id"], 10, 64)
 	if err != nil {
-		responses.ERROR(w, http.StatusUnprocessableEntity, err)
+		responses.ERROR(w, http.StatusBadRequest, err)
 		return
 	}
 	dataReceived, err := server.DB.FindByIdPaymentSetting(uint(pid))
 	if err != nil {
-		responses.ERROR(w, http.StatusNotFound, err)
+		responses.ERROR(w, http.StatusInternalServerError, err)
 		return
 	}
 	responses.JSON(w, http.StatusOK, dataReceived)
@@ -155,7 +156,7 @@ func (server *Server) UpdatePaymentSetting(w http.ResponseWriter, r *http.Reques
 	}
 	data, err := server.DB.FindByIdPaymentSetting(uint(pid))
 	if err != nil {
-		responses.ERROR(w, http.StatusNotFound, err)
+		responses.ERROR(w, http.StatusInternalServerError, err)
 		return
 	}
 	// decoder := json.NewDecoder(r.Body)

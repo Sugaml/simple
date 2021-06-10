@@ -61,8 +61,8 @@ func TestGetPaymentSettingAPI(t *testing.T) {
 				assert.Equal(t, http.StatusNotFound, 404)
 			},
 		},
-		/*	{
-			name: "InternalError",
+		{
+			name: "InternalServerError",
 			PID:  paymentsetting.ID,
 
 			buildStubs: func(store *mockdb.MockStore) {
@@ -73,9 +73,9 @@ func TestGetPaymentSettingAPI(t *testing.T) {
 			},
 
 			checkResponse: func(t *testing.T, recorder *httptest.ResponseRecorder) {
-				assert.Equal(t, http.StatusUnprocessableEntity, recorder.Code)
+				assert.Equal(t, http.StatusInternalServerError, recorder.Code)
 			},
-		},*/
+		},
 	}
 	for i := range testCases {
 		tc := testCases[i]
@@ -92,12 +92,8 @@ func TestGetPaymentSettingAPI(t *testing.T) {
 
 			url := fmt.Sprintf("/payment/paymentsetting/%d", tc.PID)
 			request, err := http.NewRequest(http.MethodGet, url, nil)
+			assert.NoError(t, err)
 			request.Header.Add("x-user-id", "1")
-			// = tc.Header
-			/*request.Header = map[string][]string{
-
-				"x-user-id": {"1"},
-			}*/
 			assert.NoError(t, err)
 			server.Router.ServeHTTP(recorder, request)
 			//check response
@@ -150,21 +146,19 @@ func TestGetPaymentSettingByUserIDAPI(t *testing.T) {
 				assert.Equal(t, http.StatusNotFound, 404)
 			},
 		},*/
-		/*	{
+		{
 			name: "InternalError",
 			PID:  paymentsetting.ID,
-
 			buildStubs: func(store *mockdb.MockStore) {
 				store.EXPECT().
-					FindByIdPaymentSetting(gomock.Eq(paymentsetting.ID)).
+					FindByUserIDPaymentSetting(gomock.Eq(paymentsetting.UserID)).
 					Times(1).
 					Return(models.PaymentSetting{}, sql.ErrConnDone)
 			},
-
 			checkResponse: func(t *testing.T, recorder *httptest.ResponseRecorder) {
-				assert.Equal(t, http.StatusUnprocessableEntity, recorder.Code)
+				assert.Equal(t, http.StatusInternalServerError, recorder.Code)
 			},
-		},*/
+		},
 	}
 	for i := range testCases {
 		tc := testCases[i]
@@ -179,7 +173,7 @@ func TestGetPaymentSettingByUserIDAPI(t *testing.T) {
 			server := newTestServer(t, store)
 			recorder := httptest.NewRecorder()
 
-			url := fmt.Sprintf("/payment/paymentsetting")
+			url := "/payment/paymentsetting"
 			request, err := http.NewRequest(http.MethodGet, url, nil)
 			request.Header.Add("x-user-id", "1")
 			// = tc.Header
@@ -226,7 +220,6 @@ func TestCreatePaymentSettingAPI(t *testing.T) {
 			},
 			checkResponse: func(recorder *httptest.ResponseRecorder) {
 				assert.Equal(t, http.StatusCreated, recorder.Code)
-				//requireBodyMatchPaymentSetting(t, recorder.Body, paymentsetting)
 			},
 		},
 		{
@@ -249,13 +242,13 @@ func TestCreatePaymentSettingAPI(t *testing.T) {
 			},
 		},
 		{
-			name: "Bad Request",
+			name: "UnprocessableEnitity",
 			body: gin.H{
-				"country":     "",
+				"country":     12,
 				"state":       "",
 				"city":        "",
-				"street":      11,
-				"postal_code": "446600",
+				"street":      "",
+				"postal_code": "34546",
 			},
 			buildStubs: func(store *mockdb.MockStore) {
 				store.EXPECT().
@@ -334,12 +327,28 @@ func TestUpdatePaymentSettingAPI(t *testing.T) {
 			buildStubs: func(store *mockdb.MockStore) {
 				store.EXPECT().FindByIdPaymentSetting(gomock.Eq(uint(paymentsetting.ID))).Times(1).Return(paymentsetting, nil)
 				store.EXPECT().UpdatePaymentSetting(paymentsetting).Times(1).Return(paymentsetting, nil)
-				fmt.Println(paymentsetting)
-				//store.UpdatePaymentSetting(paymentsetting)
 			},
 			checkResponse: func(t *testing.T, recorder *httptest.ResponseRecorder) {
 				require.Equal(t, http.StatusCreated, 201)
 				//requireBodyMatchPaymentSetting(t, recorder.Body, paymentsetting)
+			},
+		},
+		{
+			name: "UnprocessedEnitity",
+			PID:  paymentsetting.ID,
+			body: gin.H{
+				"country":     1234,
+				"state":       "Bagmati",
+				"city":        "Kathmandu",
+				"street":      "",
+				"postal_code": "446600",
+			},
+			buildStubs: func(store *mockdb.MockStore) {
+				store.EXPECT().FindByIdPaymentSetting(gomock.Eq(uint(paymentsetting.ID))).Times(1).Return(paymentsetting, nil)
+				store.EXPECT().UpdatePaymentSetting(gomock.Any()).Times(0).Return(models.PaymentSetting{}, nil)
+			},
+			checkResponse: func(t *testing.T, recorder *httptest.ResponseRecorder) {
+				require.Equal(t, http.StatusUnprocessableEntity, recorder.Code)
 			},
 		},
 	}
@@ -351,12 +360,11 @@ func TestUpdatePaymentSettingAPI(t *testing.T) {
 
 			store := mockdb.NewMockStore(ctrl)
 			tc.buildStubs(store)
-			//store.Update(paymentsetting)
-			//start test server and send request
 			server := newTestServer(t, store)
 			recorder := httptest.NewRecorder()
 			// Marshal body data to JSON
 			data, err := json.Marshal(tc.body)
+			assert.NoError(t, err)
 			url := fmt.Sprintf("/payment/paymentsetting/%d", tc.PID)
 			request, err := http.NewRequest(http.MethodPut, url, bytes.NewReader(data))
 			request.Header.Add("x-user-id", "1")
@@ -388,12 +396,25 @@ func TestDeletePaymentSettingAPI(t *testing.T) {
 			name: "Delete",
 			PID:  1,
 			buildStubs: func(store *mockdb.MockStore) {
-				//store.EXPECT().FindByIdPaymentSetting(gomock.Eq(uint(paymentsetting.ID))).Times(1).Return(paymentsetting, nil)
 				store.EXPECT().DeletePaymentSetting(uint(paymentsetting.ID)).Times(1).Return(int64(1), nil)
-				//store.Delete(uint(paymentsetting.ID))
 			},
 			checkResponse: func(t *testing.T, recorder *httptest.ResponseRecorder) {
 				assert.Equal(t, http.StatusNoContent, recorder.Code)
+			},
+		},
+		{
+			name: "InternalServerError",
+			PID:  1,
+
+			buildStubs: func(store *mockdb.MockStore) {
+				store.EXPECT().
+					DeletePaymentSetting(gomock.Eq(paymentsetting.ID)).
+					Times(1).
+					Return(int64(1), sql.ErrConnDone)
+			},
+
+			checkResponse: func(t *testing.T, recorder *httptest.ResponseRecorder) {
+				assert.Equal(t, http.StatusInternalServerError, recorder.Code)
 			},
 		},
 	}
